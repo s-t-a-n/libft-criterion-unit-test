@@ -28,7 +28,7 @@ _criterion()
 	if [ ! -d /Users/$USER/.brew/Cellar/criterion ]
 	then
 		echo "--- Installing criterion!"
-		brew install snaipe/soft/criterion
+		/Users/$USER/.brew/bin/brew install snaipe/soft/criterion
 	else
 		echo '--- Criterion is already present!'
 	fi

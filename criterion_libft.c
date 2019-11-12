@@ -1644,9 +1644,9 @@ Test(strings, ft_strtrim)
 
 int		CRIT_is_array_equal(char **returned, char **expected, int len)
 {
-	while (len > 0)
+	while (len >= 0)
 	{
-		if (expected[len] == NULL && returned[len] != NULL)
+		if ((expected[len] != NULL && returned[len] == NULL) || (expected[len] == NULL && returned[len] != NULL))
 			return (1);	
 		else if (expected[len] != NULL && strcmp(expected[len], returned[len]) != 0)
 			return (1);
@@ -1679,7 +1679,6 @@ Test(strings, ft_split)
 	char **returned;
 	int len;
 
-
 	len = 2;
 	expected = malloc(sizeof(char *) * (len + 1));
 	expected[0] = "abc";
@@ -1687,6 +1686,17 @@ Test(strings, ft_split)
 	expected[2] = NULL;
 	src = "abc:def";
 	delim = ':';
+	returned = ft_split(src, delim);
+	cr_expect(CRIT_is_array_equal(returned, expected, len) == 0, "Your ft_split doesnt work -> ft_split{s : |%s|, c : |%c|}", src, delim);
+	free (expected);
+	CRIT_free_array((void **)returned);
+
+	len = 1;
+	expected = malloc(sizeof(char *) * (len + 1));
+	expected[0] = ":::::::";
+	expected[1] = NULL;
+	src = ":::::::";
+	delim = 'b';
 	returned = ft_split(src, delim);
 	cr_expect(CRIT_is_array_equal(returned, expected, len) == 0, "Your ft_split doesnt work -> ft_split{s : |%s|, c : |%c|}", src, delim);
 	free (expected);
@@ -1714,10 +1724,9 @@ Test(strings, ft_split)
 	free (expected);
 	CRIT_free_array((void **)returned);
 
-	len = 1;
+	len = 0;
 	expected = malloc(sizeof(char *) * (len + 1));
-	expected[0] = "";
-	expected[1] = NULL;
+	expected[0] = NULL;
 	src = ":::::::\0::abc:::::";
 	delim = ':';
 	returned = ft_split(src, delim);
@@ -1759,18 +1768,7 @@ Test(strings, ft_split)
 	cr_expect(CRIT_is_array_equal(returned, expected, len) == 0, "Your ft_split doesnt work -> ft_split{s : |%s|, c : |%c|}", src, delim);
 	free (expected);
 	CRIT_free_array((void **)returned);
-
-	len = 1;
-	expected = malloc(sizeof(char *) * (len + 1));
-	expected[0] = "";
-	expected[1] = NULL;
-	src = "cccc";
-	delim = 'c';
-	returned = ft_split(src, delim);
-	cr_expect(CRIT_is_array_equal(returned, expected, len) == 0, "Your ft_split doesnt work -> ft_split{s : |%s|, c : |%c|}", src, delim);
-	free (expected);
-	CRIT_free_array((void **)returned);
-} 
+}
 
 Test(strings, ft_itoa)
 {
