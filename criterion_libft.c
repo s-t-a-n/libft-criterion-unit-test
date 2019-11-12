@@ -63,14 +63,34 @@ Test(strings, ft_strncmp)
 	char *str2;
 	int n = 0;
 
-	str1 = "Yallaaaaa";
-	str2 = "Yallaaaaa";
-	n = 100;
+	str1 = "a";
+	str2 = "b";
+	n = 0;
 	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%i}", str1, str2, n);
 
-	str1 = "Yallaaaaa";
-	str2 = "Yallaaaaa";
+	str1 = "a\0";
+	str2 = "b\200";
+	n = 3;
+	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%i}", str1, str2, n);
+
+	str1 = "aa";
+	str2 = "b";
+	n = 2;
+	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%i}", str1, str2, n);
+
+	str1 = "a";
+	str2 = "bb";
+	n = 2;
+	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%i}", str1, str2, n);
+
+	str1 = "aYallaaaaa";
+	str2 = "bYallaaaaa";
 	n = 0;
+	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%i}", str1, str2, n);
+
+	str1 = "aYallaaaaa";
+	str2 = "bYallaaaaa";
+	n = 1;
 	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%i}", str1, str2, n);
 
 	str1 = "Yallbaaaa";
