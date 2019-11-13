@@ -384,6 +384,8 @@ Test(strings, ft_strchr)
 	n = (int)'a';
 	cr_expect_eq(ft_strchr(str, n), strchr(str, n),"Your ft_strchr doesnt work for s1{%s} n{%i}", str, n);
 
+	// yes, I was expecting you. Don't forget to typecast properly! You should typecast to unsigned char and not just
+	// char. Why? Because some weird shit with bits in edge cases. Well atleast that was what Lord Google told me. 
 	str = "INT_MIN";
 	n = INT_MIN;
 	cr_expect_eq(ft_strchr(str, n), strchr(str, n),"Your ft_strchr doesnt work for s1{%s} n{%i}", str, n);

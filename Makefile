@@ -6,7 +6,7 @@
 #    By: sverschu </var/mail/sverschu>                +#+                      #
 #                                                    +#+                       #
 #    Created: 2019/10/30 16:10:10 by sverschu      #+#    #+#                  #
-#    Updated: 2019/11/12 19:17:25 by sverschu      ########   odam.nl          #
+#    Updated: 2019/11/13 12:30:11 by sverschu      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,7 +36,7 @@ clean:
 fclean: clean
 	@$(RM) $(NAME)
 
-f: 
+f: all
 	@$(MAKE) -C $(LIBFT_FOLDER) re
 	@./$(NAME)
 re: fclean all
