@@ -6,7 +6,7 @@
 #    By: sverschu </var/mail/sverschu>                +#+                      #
 #                                                    +#+                       #
 #    Created: 2019/10/30 16:10:10 by sverschu      #+#    #+#                  #
-#    Updated: 2019/11/13 12:30:11 by sverschu      ########   odam.nl          #
+#    Updated: 2019/11/13 13:01:58 by sverschu      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ SRC = criterion_libft.c $(LIBFT_FOLDER)/libft.a
 CC_FLAGS = -Werror -Wextra -Wall -lcriterion
 
 # commands
-all: $(NAME)
+all: libft $(NAME)
 
 $(NAME): $(SRC)
 	@$(CC) $(CC_FLAGS) -I$(LIBFT_INC) $(SRC) -o $(NAME)
@@ -36,7 +36,10 @@ clean:
 fclean: clean
 	@$(RM) $(NAME)
 
-f: all
+libft: 
 	@$(MAKE) -C $(LIBFT_FOLDER) re
+
+f: all
+	@echo "Segfault errors means your functions are overprotected (but Moulinette will love you anyway)"
 	@./$(NAME)
 re: fclean all

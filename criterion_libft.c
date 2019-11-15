@@ -1607,6 +1607,8 @@ Test(strings, ft_strtrim)
 	set = "a";
 	dst = ft_strtrim(src, set);
 	cr_expect(strcmp(dst, "brakadabr") == 0, "Your ft_strtrim doesnt work -> ft_strtrim{s1 : |%s|, set : |%s|}", src, set);
+	// mutability test
+	dst[0] = 'a';
 	free (dst);
 
 	src = "abc";
@@ -1637,6 +1639,8 @@ Test(strings, ft_strtrim)
 	set = "";
 	dst = ft_strtrim(src, set);
 	cr_expect(strcmp(dst, "") == 0, "Your ft_strtrim doesnt work -> ft_strtrim{s1 : |%s|, set : |%s|}", src, set);
+	// mutability test
+	dst[0] = 'a';
 	free (dst);
 
 	src = "";
