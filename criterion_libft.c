@@ -970,7 +970,9 @@ Test(strings, ft_strdup)
 	dst1 = ft_strdup(src);
 	dst2 = strdup(src);
 	msize = strlen(src) + 1;
-	cr_expect(memcmp(dst1, dst2, msize) == 0,"1: Your ft_strdup doesnt work -> strldup{%s}", src);
+	cr_expect(memcmp(dst1, dst2, msize) == 0,"1: Your ft_strdup doesnt work -> strdup{%s}", src);
+	// mutability test
+	dst1[0] = 'a';
 	free (dst1);
 	free (dst2);
 
@@ -978,7 +980,9 @@ Test(strings, ft_strdup)
 	dst1 = ft_strdup(src);
 	dst2 = strdup(src);
 	msize = strlen(src) + 1;
-	cr_expect(memcmp(dst1, dst2, msize) == 0,"2: Your ft_strdup doesnt work -> strldup{%s}", src);
+	cr_expect(memcmp(dst1, dst2, msize) == 0,"2: Your ft_strdup doesnt work -> strdup{%s}", src);
+	// mutability test
+	dst1[0] = 'a';
 	free (dst1);
 	free (dst2);
 
@@ -986,7 +990,7 @@ Test(strings, ft_strdup)
 	dst1 = ft_strdup(src);
 	dst2 = strdup(src);
 	msize = strlen(src) + 1;
-	cr_expect(memcmp(dst1, dst2, msize) == 0,"3: Your ft_strdup doesnt work -> strldup{%s}", src);
+	cr_expect(memcmp(dst1, dst2, msize) == 0,"3: Your ft_strdup doesnt work -> strdup{%s}", src);
 	free (dst1);
 	free (dst2);
 
@@ -994,7 +998,7 @@ Test(strings, ft_strdup)
 	dst1 = ft_strdup(src);
 	dst2 = strdup(src);
 	msize = strlen(src) + 1;
-	cr_expect(memcmp(dst1, dst2, msize) == 0,"4: Your ft_strdup doesnt work -> strldup{%s}", src);
+	cr_expect(memcmp(dst1, dst2, msize) == 0,"4: Your ft_strdup doesnt work -> strdup{%s}", src);
 	free (dst1);
 	free (dst2);
 
@@ -1002,7 +1006,7 @@ Test(strings, ft_strdup)
 	dst1 = ft_strdup(src);
 	dst2 = strdup(src);
 	msize = strlen(src) + 1;
-	cr_expect(memcmp(dst1, dst2, msize) == 0,"5: Your ft_strdup doesnt work -> strldup{%s}", src);
+	cr_expect(memcmp(dst1, dst2, msize) == 0,"5: Your ft_strdup doesnt work -> strdup{%s}", src);
 	free (dst1);
 	free (dst2);
 } 
