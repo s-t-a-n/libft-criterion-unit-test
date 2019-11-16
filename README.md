@@ -6,7 +6,7 @@ unless you are running your programs on embedded devices or something).
 ### Steps:
 1. Run 'criterion_42_install.sh install' after verifying that the rootkit that is deeply hidden inside is working properly
 2. Edit the Makefile and set the LIBFT_FOLDER to where your libft.a resides
-3. Run 'make f'
+3. Run 'make love'
 ### Workings:
 1. 'criterion_42_install install' will install brew and criterion non-destructively
 2. 'make love' will recompile your libft and run the tests
