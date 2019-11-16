@@ -65,7 +65,7 @@ Test(strings, ft_strlen)
 	for (int i = -bound; i < bound; i++)
 	{
 		str = CRIT_randstring(1000);
-    	cr_expect_eq(ft_strlen(str), strlen(str), "Your ft_strlen doesnt work for |%s|",str);
+    	cr_expect_eq(ft_strlen(str), strlen(str), "Your ft_strlen doesnt work for <RANDOM STRING>");
 		free(str);
 	}
 }
@@ -227,7 +227,7 @@ Test(strings, ft_strncmp)
 		str1 = CRIT_randstring(1000);
 		str2 = CRIT_randstring(1000);
 		n = rand() % 1001;
-		cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%i}", str1, str2, n);
+		cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1<RANDOM STRING> s2<RANDOM STRING> n{%i}", n);
 		free(str1);
 		free(str2);
 	}
@@ -1288,8 +1288,8 @@ Test(memory, ft_memcpy)
 		{
 			memcpy(dst1, src, strlen(src) + 1);
 			void *ret = ft_memcpy(dst2, src, strlen(src) + 1);
-			cr_expect(ret == dst2, "Your ft_memcpy doesnt work -> ft_memcpy{dst: |%s|, src: |%s|,  n |%i|}", dst2, src, msize);
-			cr_expect(memcmp(dst1, dst2, msize) == 0,"Your ft_memcpy doesnt work -> ft_memcpy{dst: |%s|, src: |%s|,  n |%i|}", dst2, src, msize);
+			cr_expect(ret == dst2, "Your ft_memcpy doesnt work -> ft_memcpy{dst: <RANDOM STRING>, src: <RANDOM STRING>,  n |%i|}", msize);
+			cr_expect(memcmp(dst1, dst2, msize) == 0,"Your ft_memcpy doesnt work -> ft_memcpy{dst: <RANDOM STRING>, src: <RANDOM STRING>,  n |%i|}", msize);
 			free (src);
 		}
 	}
@@ -1335,11 +1335,11 @@ Test(memory, ft_memccpy)
 			int rand_char = rand() % 256;
 			void *orig_m = memccpy(dst1, src, rand_char, strlen(src) + 1);
 			void *your_m = ft_memccpy(dst2, src, rand_char, strlen(src) + 1);
-			cr_expect(memcmp(dst1, dst2, msize) == 0,"COPY: Your ft_memccpy doesnt work -> ft_memccpy{dst: |%s|, src: |%s|, n |%i|}", dst2, src, msize);
+			cr_expect(memcmp(dst1, dst2, msize) == 0,"COPY: Your ft_memccpy doesnt work -> ft_memccpy{dst: <RANDOM STRING>, src: <RANDOM STRING>, n |%i|}", msize);
 			if (orig_m == NULL || your_m == NULL)
-				cr_expect(orig_m == your_m, "NULL: Your ft_memccpy doesnt work -> ft_memccpy{dst: |%s|, src: |%s|, n |%i|}", dst2, src, msize);
+				cr_expect(orig_m == your_m, "NULL: Your ft_memccpy doesnt work -> ft_memccpy{dst: <RANDOM STRING>, src: <RANDOM STRING>, n |%i|}", msize);
 			else
-				cr_expect(memcmp(orig_m, your_m, 10) == 0,"RETURN: Your ft_memccpy doesnt work -> ft_memccpy{dst: |%s|, src: |%s|, n |%i|}", dst2, src, msize);
+				cr_expect(memcmp(orig_m, your_m, 10) == 0,"RETURN: Your ft_memccpy doesnt work -> ft_memccpy{dst: <RANDOM STRING>, src: <RANDOM STRING>, n |%i|}", msize);
 			free (src);
 		}
 	}
@@ -1386,15 +1386,15 @@ Test(memory, ft_memmove)
 			{
 				memmove(dst1 + 5, dst1, strlen(src) + 1);
 				void *ret = ft_memmove(dst2 + 5, dst2, strlen(src) + 1);
-				cr_expect(ret == dst2 + 5, "Your ft_memmove doesnt work -> ft_memmove{dst: |%s|, src: |%s|,  n |%i|}", dst2, src, msize);
-				cr_expect(memcmp(dst1, dst2, msize) == 0,"Your ft_memmove doesnt work -> ft_memmove{dst: |%s|, src: |%s|,  n |%i|}", dst2, src, msize);
+				cr_expect(ret == dst2 + 5, "Your ft_memmove doesnt work -> ft_memmove{dst: <RANDOM STRING>, src: <RANDOM STRING>,  n |%i|}", msize);
+				cr_expect(memcmp(dst1, dst2, msize) == 0,"Your ft_memmove doesnt work -> ft_memmove{dst: <RANDOM STRING>, src: <RANDOM STRING>,  n |%i|}",  msize);
 			}
 			else
 			{
 				memmove(dst1, dst1 + 5, strlen(src) + 1);
 				void *ret = ft_memmove(dst2, dst2 + 5 , strlen(src) + 1);
-				cr_expect(ret == dst2, "Your ft_memmove doesnt work -> ft_memmove{dst: |%s|, src: |%s|,  n |%i|}", dst2, src, msize);
-				cr_expect(memcmp(dst1, dst2, msize) == 0,"Your ft_memmove doesnt work -> ft_memmove{dst: |%s|, src: |%s|,  n |%i|}", dst2, src, msize);
+				cr_expect(ret == dst2, "Your ft_memmove doesnt work -> ft_memmove{dst: <RANDOM STRING>, src: <RANDOM STRING>,  n |%i|}", msize);
+				cr_expect(memcmp(dst1, dst2, msize) == 0,"Your ft_memmove doesnt work -> ft_memmove{dst: <RANDOM STRING>, src:, <RANDOM STRING>  n |%i|}", msize);
 			}
 			free (src);
 		}
@@ -1441,7 +1441,7 @@ Test(memory, ft_memchr)
 			orig = memchr(dst, c, msize);
 			yours = ft_memchr(dst, c, msize);
 
-			cr_expect(orig == yours, "Your ft_memchr doesnt work -> ft_memchr{dst: |%s|, char: |%c|,  n |%i|}", dst, c, msize);
+			cr_expect(orig == yours, "Your ft_memchr doesnt work -> ft_memchr{dst: <RANDOM STRING>, char: |%c|,  n |%i|}", c, msize);
 			free (src);
 		}
 	}
@@ -1490,7 +1490,7 @@ Test(memory, ft_memcmp)
 		{
 			int orig = memcmp(dst1, dst2, msize);
 			int yours = ft_memcmp(dst1, dst2, msize);
-			cr_expect(orig == yours, "Your ft_memcmp doesnt work -> ft_memcmp{s1: |%s|, s2 |%s|,  n |%i|}", dst1, dst2, msize);
+			cr_expect(orig == yours, "Your ft_memcmp doesnt work -> ft_memcmp{s1: <RANDOM STRING>, s2: <RANDOM STRING>,  n |%i|}", msize);
 			free (src1);
 			free (src2);
 		}
@@ -1515,13 +1515,12 @@ Test(strings, ft_substr_segv1, .signal = SIGSEGV)
 	ft_substr(NULL, 10, 10);
 }
 
-/*
-Test(strings, ft_substr_segv2, .signal = SIGABRT)
+// your malloc'ing way to much!
+Test(strings, ft_substr_segv2, .signal = SIGSEGV)
 {
-	char *src = ft_substr("ABC", 1, 100000);
-	memset(src, 10000, 90000);
+	char *str = ft_substr("ABC", 2, 100);
+	str[80] = 'a';
 }
-*/
 
 Test(strings, ft_substr)
 {
