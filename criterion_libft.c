@@ -9,6 +9,9 @@
 
 #include "libft.h"
 
+#define PART2_PROTECT_CHECK 0
+#define INT_OVERFLOW_SIZE (2 * 1024 * 1024 * 1024 + 42)
+
 // malloc failure is not handled
 
 char *CRIT_randstring(size_t max_length)
@@ -27,17 +30,18 @@ char *CRIT_randstring(size_t max_length)
 	return (NULL);
 }
 
-char *CRIT_randmem(size_t max_length)
+unsigned char *CRIT_randmem(size_t max_length)
 {
 	int length = rand() % (int)max_length;
-	char *random_string = malloc(sizeof(char) * (length + 1));
+	unsigned char *random_string = malloc(sizeof(unsigned char) * (length + 1));
     if (random_string)
 	{
         for (int i = 0; i < length; i++)
 		{
-            random_string[i] = (char)rand() % 256;
+            random_string[i] = (unsigned char)rand() % 256;
+			if (random_string[i] == '\0' && rand() % 2)
+				random_string[i] = 42;
 		}
-        random_string[length] = '\0';
         return random_string;
     }
 	return (NULL);
@@ -62,6 +66,7 @@ Test(strings, ft_strlen)
     cr_expect_eq(ft_strlen(str), strlen(str), "Your ft_strlen doesnt work for |%s|",str);
 
 	int bound = 1000;
+	srand(time(NULL) * 470);
 	for (int i = -bound; i < bound; i++)
 	{
 		str = CRIT_randstring(1000);
@@ -221,6 +226,8 @@ Test(strings, ft_strncmp)
 	n = 100;
 	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%i}", str1, str2, n);
 
+
+	srand(time(NULL) * 8366);
 	int bound = 1000;
 	for (int i = -bound; i < bound; i++)
 	{
@@ -1270,7 +1277,7 @@ Test(memory, ft_memcpy)
 	int		msize = 1000;
 	void	*dst1 = malloc (msize);
 	void	*dst2 = malloc (msize);
-	char	*src;
+	unsigned char	*src;
 
 	cr_expect_null(ft_memcpy(NULL, NULL, 1000), "Your ft_memcpy doesnt work -> ft_memcpy{ dst : |NULL|, src: |NULL|, n |1000|}");
 	cr_expect_null(ft_memcpy(NULL, dst1, 0), "Your ft_memcpy doesnt work -> ft_memcpy{ dst : |NULL|, src: |%s|, n |0|}", dst1);
@@ -1286,8 +1293,8 @@ Test(memory, ft_memcpy)
 		src = CRIT_randmem(msize);
 		if (src)
 		{
-			memcpy(dst1, src, strlen(src) + 1);
-			void *ret = ft_memcpy(dst2, src, strlen(src) + 1);
+			memcpy(dst1, src, strlen((char *)src) + 1);
+			void *ret = ft_memcpy(dst2, src, strlen((char *)src) + 1);
 			cr_expect(ret == dst2, "Your ft_memcpy doesnt work -> ft_memcpy{dst: <RANDOM STRING>, src: <RANDOM STRING>,  n |%i|}", msize);
 			cr_expect(memcmp(dst1, dst2, msize) == 0,"Your ft_memcpy doesnt work -> ft_memcpy{dst: <RANDOM STRING>, src: <RANDOM STRING>,  n |%i|}", msize);
 			free (src);
@@ -1317,7 +1324,7 @@ Test(memory, ft_memccpy)
 	int		msize = 1000;
 	void	*dst1 = malloc (msize);
 	void	*dst2 = malloc (msize);
-	char	*src;
+	unsigned char	*src;
 
 	cr_expect_null(ft_memccpy(NULL, dst1, 0, 0), "Your ft_memccpy doesnt work -> ft_memccpy{ dst : |NULL|, src: |%s|, n |0|}", dst1);
 	cr_expect_null(ft_memccpy(dst1, NULL, 0, 0), "Your ft_memccpy doesnt work -> ft_memccpy{ dst : |%s|, src: |NULL|, n |0|}", dst1);
@@ -1333,8 +1340,8 @@ Test(memory, ft_memccpy)
 		if (src)
 		{
 			int rand_char = rand() % 256;
-			void *orig_m = memccpy(dst1, src, rand_char, strlen(src) + 1);
-			void *your_m = ft_memccpy(dst2, src, rand_char, strlen(src) + 1);
+			void *orig_m = memccpy(dst1, src, rand_char, strlen((char *)src) + 1);
+			void *your_m = ft_memccpy(dst2, src, rand_char, strlen((char *)src) + 1);
 			cr_expect(memcmp(dst1, dst2, msize) == 0,"COPY: Your ft_memccpy doesnt work -> ft_memccpy{dst: <RANDOM STRING>, src: <RANDOM STRING>, n |%i|}", msize);
 			if (orig_m == NULL || your_m == NULL)
 				cr_expect(orig_m == your_m, "NULL: Your ft_memccpy doesnt work -> ft_memccpy{dst: <RANDOM STRING>, src: <RANDOM STRING>, n |%i|}", msize);
@@ -1362,7 +1369,7 @@ Test(memory, ft_memmove)
 	int		msize = 1000;
 	void	*dst1 = malloc (msize);
 	void	*dst2 = malloc (msize);
-	char	*src;
+	unsigned char	*src;
 
 
 	cr_expect_null(ft_memmove(NULL, NULL, 1000), "Your ft_memmove doesnt work -> ft_memmove{ dst : |NULL|, src: |NULL|, n |1000|}");
@@ -1378,21 +1385,21 @@ Test(memory, ft_memmove)
 		srand(time(NULL) * i);
 
 		src = CRIT_randmem(msize / 2);
-		memcpy(dst1, src, strlen(src) + 1);
-		memcpy(dst2, src, strlen(src) + 1);
+		memcpy(dst1, src, strlen((char *)src) + 1);
+		memcpy(dst2, src, strlen((char *)src) + 1);
 		if (src)
 		{
 			if (src[0] > 64)
 			{
-				memmove(dst1 + 5, dst1, strlen(src) + 1);
-				void *ret = ft_memmove(dst2 + 5, dst2, strlen(src) + 1);
+				memmove(dst1 + 5, dst1, strlen((char *)src) + 1);
+				void *ret = ft_memmove(dst2 + 5, dst2, strlen((char *)src) + 1);
 				cr_expect(ret == dst2 + 5, "Your ft_memmove doesnt work -> ft_memmove{dst: <RANDOM STRING>, src: <RANDOM STRING>,  n |%i|}", msize);
 				cr_expect(memcmp(dst1, dst2, msize) == 0,"Your ft_memmove doesnt work -> ft_memmove{dst: <RANDOM STRING>, src: <RANDOM STRING>,  n |%i|}",  msize);
 			}
 			else
 			{
-				memmove(dst1, dst1 + 5, strlen(src) + 1);
-				void *ret = ft_memmove(dst2, dst2 + 5 , strlen(src) + 1);
+				memmove(dst1, dst1 + 5, strlen((char *)src) + 1);
+				void *ret = ft_memmove(dst2, dst2 + 5 , strlen((char *)src) + 1);
 				cr_expect(ret == dst2, "Your ft_memmove doesnt work -> ft_memmove{dst: <RANDOM STRING>, src: <RANDOM STRING>,  n |%i|}", msize);
 				cr_expect(memcmp(dst1, dst2, msize) == 0,"Your ft_memmove doesnt work -> ft_memmove{dst: <RANDOM STRING>, src:, <RANDOM STRING>  n |%i|}", msize);
 			}
@@ -1413,7 +1420,7 @@ Test(memory, ft_memchr)
 	int				msize = 1000;
 	void			*dst = malloc (msize);
 	unsigned char	c;
-	char			*src;
+	unsigned char	*src;
 	void 			*orig;
 	void 			*yours;
 
@@ -1433,8 +1440,8 @@ Test(memory, ft_memchr)
 		memset(dst, 'A', msize);
 		srand(time(NULL) * i);
 
-		src = CRIT_randstring(msize / 2);
-		memcpy(dst, src, strlen(src) + 1);
+		src = CRIT_randmem(msize / 2);
+		memcpy(dst, src, strlen((char *)src) + 1);
 		if (src)
 		{
 			c = rand() % 256;
@@ -1468,10 +1475,10 @@ Test(memory, ft_memcmp_segv3, .signal = SIGSEGV)
 Test(memory, ft_memcmp)
 {
 	int		msize = 1000;
-	char	*dst1 = malloc(msize);
-	char	*dst2 = malloc(msize);
-	char	*src1;
-	char	*src2;
+	unsigned char	*dst1 = malloc(msize);
+	unsigned char	*dst2 = malloc(msize);
+	unsigned char	*src1;
+	unsigned char	*src2;
 
 	cr_expect(ft_memcmp(NULL, NULL, 0) == 0, "Your ft_memcmp doesnt work -> ft_memcmp{ s1 : |NULL|, s2 : |NULL|, n : |0|}");
 
@@ -1484,8 +1491,8 @@ Test(memory, ft_memcmp)
 
 		src1 = CRIT_randmem(msize / 2);
 		src2 = CRIT_randmem(msize / 2);
-		memcpy(dst1, src1, strlen(src1) + 1);
-		memcpy(dst2, src2, strlen(src2) + 1);
+		memcpy(dst1, src1, strlen((char *)src1) + 1);
+		memcpy(dst2, src2, strlen((char *)src2) + 1);
 		if (src1 && src2)
 		{
 			int orig = memcmp(dst1, dst2, msize);
@@ -1510,16 +1517,20 @@ Test(memory, ft_calloc)
 	cr_expect(memcmp(dst1, dst2, msize * count) == 0, "Your ft_calloc doesnt work -> ft_calloc{count : |%i|, size : |%i|}", count, msize);
 }
 
+#if PART2_PROTECT_CHECK == 1
 Test(strings, ft_substr_segv1, .signal = SIGSEGV)
 {
 	ft_substr(NULL, 10, 10);
 }
+#endif
 
 // your malloc'ing way to much!
 Test(strings, ft_substr_segv2, .signal = SIGSEGV)
 {
-	char *str = ft_substr("ABC", 2, 100);
-	str[80] = 'a';
+	// huge size is due too memory paging (malloc(1) will reserve just one page (4KB of memory and you can freely write
+	// to that without segfaulting)
+	char *str = ft_substr("ABC", 2, 500000000);
+	str[49999000] = 'a';
 }
 
 Test(strings, ft_substr)
@@ -1536,6 +1547,7 @@ Test(strings, ft_substr)
 	cr_expect(strncmp(dst, "een ", len + 1) == 0, "Your ft_substr doesnt work -> ft_substr{s : |%s|, start : |%i|, len : |%i|}", src, start, (int)len);
 	free(dst);
 
+	src = "Beter een zekere snack dan een onzekere maaltijd zei de kannibaal tegen de patatboer";
 	start = 31;
 	len = 17;
 	dst = ft_substr(src, start, len);
@@ -1596,6 +1608,7 @@ Test(strings, ft_substr)
 	free(dst);
 }
 
+#if PART2_PROTECT_CHECK == 1
 Test(strings, ft_strjoin_segv1, .signal = SIGSEGV)
 {
 	ft_strjoin(NULL, "abc");
@@ -1610,6 +1623,7 @@ Test(strings, ft_strjoin_segv3, .signal = SIGSEGV)
 { 
 	ft_strjoin(NULL, NULL);
 }
+#endif
 
 Test(strings, ft_strjoin)
 {
@@ -1646,7 +1660,7 @@ Test(strings, ft_strjoin)
 	free (dst);
 }
 
-
+#if PART2_PROTECT_CHECK == 1
 Test(strings, ft_strtrim_segv1, .signal = SIGSEGV)
 { 
 	ft_strtrim(NULL, NULL);
@@ -1656,6 +1670,7 @@ Test(strings, ft_strtrim_segv2, .signal = SIGSEGV)
 { 
 	ft_strtrim(NULL, strdup("abc"));
 }
+#endif
 
 Test(strings, ft_strtrim)
 {
@@ -1911,6 +1926,7 @@ char CRIT_f3 (unsigned int i, char c)
 	return (0);
 }
 
+#if PART2_PROTECT_CHECK == 1
 Test(strings, ft_strmapi_segv1, .signal = SIGSEGV)
 { 
 	ft_strmapi(NULL, CRIT_f1);
@@ -1920,6 +1936,7 @@ Test(strings, ft_strmapi_segv2, .signal = SIGSEGV)
 { 
 	ft_strmapi("De Zon De Maan Veel Werk Geen Baan", NULL);
 }
+#endif
 
 Test(strings, ft_strmapi)
 {

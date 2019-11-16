@@ -9,7 +9,7 @@ unless you are running your programs on embedded devices or something).
 3. Run 'make f'
 ### Workings:
 1. 'criterion_42_install install' will install brew and criterion non-destructively
-2. 'make f' will recompile your libft en run the tests on them
+2. 'make love' will recompile your libft and run the tests
 3. After each error that is displayed by Criterion you will see a line number which corresponds to the line on which the test
    failed
 ### TO DO
