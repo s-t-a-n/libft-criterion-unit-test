@@ -10,7 +10,6 @@
 #include "libft.h"
 
 #define PART2_PROTECT_CHECK 0
-#define INT_OVERFLOW_SIZE (2 * 1024 * 1024 * 1024 + 42)
 
 // malloc failure is not handled
 
