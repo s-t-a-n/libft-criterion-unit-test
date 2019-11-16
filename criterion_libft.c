@@ -11,7 +11,7 @@
 
 // malloc failure is not handled
 
-char *randstring(size_t max_length)
+char *CRIT_randstring(size_t max_length)
 {
 	int length = rand() % (int)max_length;
 	char *random_string = malloc(sizeof(char) * (length + 1));
@@ -19,7 +19,23 @@ char *randstring(size_t max_length)
 	{
         for (int i = 0; i < length; i++)
 		{
-            random_string[i] = (char)rand() % 127;
+            random_string[i] = (char)rand() % 128;
+		}
+        random_string[length] = '\0';
+        return random_string;
+    }
+	return (NULL);
+}
+
+char *CRIT_randmem(size_t max_length)
+{
+	int length = rand() % (int)max_length;
+	char *random_string = malloc(sizeof(char) * (length + 1));
+    if (random_string)
+	{
+        for (int i = 0; i < length; i++)
+		{
+            random_string[i] = (char)rand() % 256;
 		}
         random_string[length] = '\0';
         return random_string;
@@ -45,6 +61,13 @@ Test(strings, ft_strlen)
 	str = "";
     cr_expect_eq(ft_strlen(str), strlen(str), "Your ft_strlen doesnt work for |%s|",str);
 
+	int bound = 1000;
+	for (int i = -bound; i < bound; i++)
+	{
+		str = CRIT_randstring(1000);
+    	cr_expect_eq(ft_strlen(str), strlen(str), "Your ft_strlen doesnt work for |%s|",str);
+		free(str);
+	}
 }
 
 Test(strings, ft_strncmp_segv1, .signal = SIGSEGV)
@@ -197,6 +220,17 @@ Test(strings, ft_strncmp)
 	str2 = "skrr";
 	n = 100;
 	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%i}", str1, str2, n);
+
+	int bound = 1000;
+	for (int i = -bound; i < bound; i++)
+	{
+		str1 = CRIT_randstring(1000);
+		str2 = CRIT_randstring(1000);
+		n = rand() % 1001;
+		cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%i}", str1, str2, n);
+		free(str1);
+		free(str2);
+	}
 }
 
 Test(strings, ft_strnstr_segv1, .signal = SIGSEGV)
@@ -354,57 +388,60 @@ Test(strings, ft_strchr_segv, .signal = SIGSEGV)
 Test(strings, ft_strchr)
 {
 	char *str;
-	int n;
+	int c;
 
 	str = "";
-	n = 0;
-	cr_expect_eq(ft_strchr(str, n), strchr(str, n),"Your ft_strchr doesnt work for s1{%s} n{%i}", str, n);
+	c = 0;
+	cr_expect_eq(ft_strchr(str, c), strchr(str, c),"Your ft_strchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "";
-	n = (int)'a';
-	cr_expect_eq(ft_strchr(str, n), strchr(str, n),"Your ft_strchr doesnt work for s1{%s} n{%i}", str, n);
+	c = (int)'a';
+	cr_expect_eq(ft_strchr(str, c), strchr(str, c),"Your ft_strchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "abc";
-	n = (int)'d';
-	cr_expect_eq(ft_strchr(str, n), strchr(str, n),"Your ft_strchr doesnt work for s1{%s} n{%i}", str, n);
+	c = (int)'d';
+	cr_expect_eq(ft_strchr(str, c), strchr(str, c),"Your ft_strchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "abc";
-	n = (int)'a';
-	cr_expect_eq(ft_strchr(str, n), strchr(str, n),"Your ft_strchr doesnt work for s1{%s} n{%i}", str, n);
+	c = (int)'a';
+	cr_expect_eq(ft_strchr(str, c), strchr(str, c),"Your ft_strchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "abc";
-	n = (int)'b';
-	cr_expect_eq(ft_strchr(str, n), strchr(str, n),"Your ft_strchr doesnt work for s1{%s} n{%i}", str, n);
+	c = (int)'b';
+	cr_expect_eq(ft_strchr(str, c), strchr(str, c),"Your ft_strchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "abc";
-	n = (int)'c';
-	cr_expect_eq(ft_strchr(str, n), strchr(str, n),"Your ft_strchr doesnt work for s1{%s} n{%i}", str, n);
+	c = (int)'c';
+	cr_expect_eq(ft_strchr(str, c), strchr(str, c),"Your ft_strchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "bc\0a";
-	n = (int)'a';
-	cr_expect_eq(ft_strchr(str, n), strchr(str, n),"Your ft_strchr doesnt work for s1{%s} n{%i}", str, n);
+	c = (int)'a';
+	cr_expect_eq(ft_strchr(str, c), strchr(str, c),"Your ft_strchr doesnt work for s1{%s} c{%i}", str, c);
 
-	// yes, I was expecting you. Don't forget to typecast properly! You should typecast to unsigned char and not just
-	// char. Why? Because some weird shit with bits in edge cases. Well atleast that was what Lord Google told me. 
+	// are you typecasting properly?
 	str = "INT_MIN";
-	n = INT_MIN;
-	cr_expect_eq(ft_strchr(str, n), strchr(str, n),"Your ft_strchr doesnt work for s1{%s} n{%i}", str, n);
+	c = INT_MIN;
+	cr_expect_eq(ft_strchr(str, c), strchr(str, c),"Your ft_strchr doesnt work for s1{%s} c{%i}", str, c);
+
+	str = "\200";
+	c = 200;
+	cr_expect_eq(ft_strrchr(str, c), strrchr(str, c),"Your ft_strrchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "INT_MAX";
-	n = INT_MAX;
-	cr_expect_eq(ft_strchr(str, n), strchr(str, n),"Your ft_strchr doesnt work for s1{%s} n{%i}", str, n);
+	c = INT_MAX;
+	cr_expect_eq(ft_strchr(str, c), strchr(str, c),"Your ft_strchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "aaaaaaaaaaaaaaaaaaaaaaaaa";
-	n = (int)'a';
-	cr_expect_eq(ft_strchr(str, n), strchr(str, n),"Your ft_strchr doesnt work for s1{%s} n{%i}", str, n);
+	c = (int)'a';
+	cr_expect_eq(ft_strchr(str, c), strchr(str, c),"Your ft_strchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "aaaaaaaaaaaaaaaaaaaaaaaab";
-	n = (int)'b';
-	cr_expect_eq(ft_strchr(str, n), strchr(str, n),"Your ft_strchr doesnt work for s1{%s} n{%i}", str, n);
+	c = (int)'b';
+	cr_expect_eq(ft_strchr(str, c), strchr(str, c),"Your ft_strchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "baaaaaaaaaaaaaaaaaaaaaaab";
-	n = (int)'b';
-	cr_expect_eq(ft_strchr(str, n), strchr(str, n),"Your ft_strchr doesnt work for s1{%s} n{%i}", str, n);
+	c = (int)'b';
+	cr_expect_eq(ft_strchr(str, c), strchr(str, c),"Your ft_strchr doesnt work for s1{%s} c{%i}", str, c);
 }
 
 Test(strings, ft_strrchr_segv, .signal = SIGSEGV)
@@ -415,55 +452,60 @@ Test(strings, ft_strrchr_segv, .signal = SIGSEGV)
 Test(strings, ft_strrchr)
 {
 	char *str;
-	int n;
+	int c;
 
 	str = "";
-	n = 0;
-	cr_expect_eq(ft_strrchr(str, n), strrchr(str, n),"Your ft_strrchr doesnt work for s1{%s} n{%i}", str, n);
+	c = 0;
+	cr_expect_eq(ft_strrchr(str, c), strrchr(str, c),"Your ft_strrchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "";
-	n = (int)'a';
-	cr_expect_eq(ft_strrchr(str, n), strrchr(str, n),"Your ft_strrchr doesnt work for s1{%s} n{%i}", str, n);
+	c = (int)'a';
+	cr_expect_eq(ft_strrchr(str, c), strrchr(str, c),"Your ft_strrchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "abc";
-	n = (int)'d';
-	cr_expect_eq(ft_strrchr(str, n), strrchr(str, n),"Your ft_strrchr doesnt work for s1{%s} n{%i}", str, n);
+	c = (int)'d';
+	cr_expect_eq(ft_strrchr(str, c), strrchr(str, c),"Your ft_strrchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "abc";
-	n = (int)'a';
-	cr_expect_eq(ft_strrchr(str, n), strrchr(str, n),"Your ft_strrchr doesnt work for s1{%s} n{%i}", str, n);
+	c = (int)'a';
+	cr_expect_eq(ft_strrchr(str, c), strrchr(str, c),"Your ft_strrchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "abc";
-	n = (int)'b';
-	cr_expect_eq(ft_strrchr(str, n), strrchr(str, n),"Your ft_strrchr doesnt work for s1{%s} n{%i}", str, n);
+	c = (int)'b';
+	cr_expect_eq(ft_strrchr(str, c), strrchr(str, c),"Your ft_strrchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "abc";
-	n = (int)'c';
-	cr_expect_eq(ft_strrchr(str, n), strrchr(str, n),"Your ft_strrchr doesnt work for s1{%s} n{%i}", str, n);
+	c = (int)'c';
+	cr_expect_eq(ft_strrchr(str, c), strrchr(str, c),"Your ft_strrchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "bc\0a";
-	n = (int)'a';
-	cr_expect_eq(ft_strrchr(str, n), strrchr(str, n),"Your ft_strrchr doesnt work for s1{%s} n{%i}", str, n);
+	c = (int)'a';
+	cr_expect_eq(ft_strrchr(str, c), strrchr(str, c),"Your ft_strrchr doesnt work for s1{%s} c{%i}", str, c);
 
+	// are you typecasting properly?
 	str = "INT_MIN";
-	n = INT_MIN;
-	cr_expect_eq(ft_strrchr(str, n), strrchr(str, n),"Your ft_strrchr doesnt work for s1{%s} n{%i}", str, n);
+	c = INT_MIN;
+	cr_expect_eq(ft_strrchr(str, c), strrchr(str, c),"Your ft_strrchr doesnt work for s1{%s} c{%i}", str, c);
+
+	str = "\200";
+	c = 200;
+	cr_expect_eq(ft_strrchr(str, c), strrchr(str, c),"Your ft_strrchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "INT_MAX";
-	n = INT_MAX;
-	cr_expect_eq(ft_strrchr(str, n), strrchr(str, n),"Your ft_strrchr doesnt work for s1{%s} n{%i}", str, n);
+	c = INT_MAX;
+	cr_expect_eq(ft_strrchr(str, c), strrchr(str, c),"Your ft_strrchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "aaaaaaaaaaaaaaaaaaaaaaaaa";
-	n = (int)'a';
-	cr_expect_eq(ft_strrchr(str, n), strrchr(str, n),"Your ft_strrchr doesnt work for s1{%s} n{%i}", str, n);
+	c = (int)'a';
+	cr_expect_eq(ft_strrchr(str, c), strrchr(str, c),"Your ft_strrchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "aaaaaaaaaaaaaaaaaaaaaaaab";
-	n = (int)'b';
-	cr_expect_eq(ft_strrchr(str, n), strrchr(str, n),"Your ft_strrchr doesnt work for s1{%s} n{%i}", str, n);
+	c = (int)'b';
+	cr_expect_eq(ft_strrchr(str, c), strrchr(str, c),"Your ft_strrchr doesnt work for s1{%s} c{%i}", str, c);
 
 	str = "baaaaaaaaaaaaaaaaaaaaaaab";
-	n = (int)'b';
-	cr_expect_eq(ft_strrchr(str, n), strrchr(str, n),"Your ft_strrchr doesnt work for s1{%s} n{%i}", str, n);
+	c = (int)'b';
+	cr_expect_eq(ft_strrchr(str, c), strrchr(str, c),"Your ft_strrchr doesnt work for s1{%s} c{%i}", str, c);
 }
 
 Test(strings, ft_strlcpy_segv1, .signal = SIGSEGV)
@@ -1241,7 +1283,7 @@ Test(memory, ft_memcpy)
 		memset(dst2, 'A', msize);
 		srand(time(NULL) * i);
 
-		src = randstring(msize);
+		src = CRIT_randmem(msize);
 		if (src)
 		{
 			memcpy(dst1, src, strlen(src) + 1);
@@ -1287,17 +1329,17 @@ Test(memory, ft_memccpy)
 		memset(dst2, 'A', msize);
 		srand(time(NULL) * i);
 
-		src = randstring(msize);
+		src = CRIT_randmem(msize);
 		if (src)
 		{
-			int rand_char = rand() % 127;
+			int rand_char = rand() % 256;
 			void *orig_m = memccpy(dst1, src, rand_char, strlen(src) + 1);
 			void *your_m = ft_memccpy(dst2, src, rand_char, strlen(src) + 1);
-			cr_expect(memcmp(dst1, dst2, msize) == 0,"Your ft_memccpy doesnt work -> ft_memccpy{dst: |%s|, src: |%s|, n |%i|}", dst2, src, msize);
+			cr_expect(memcmp(dst1, dst2, msize) == 0,"COPY: Your ft_memccpy doesnt work -> ft_memccpy{dst: |%s|, src: |%s|, n |%i|}", dst2, src, msize);
 			if (orig_m == NULL || your_m == NULL)
-				cr_expect(orig_m == your_m, "Your ft_memccpy doesnt work -> ft_memccpy{dst: |%s|, src: |%s|, n |%i|}", dst2, src, msize);
+				cr_expect(orig_m == your_m, "NULL: Your ft_memccpy doesnt work -> ft_memccpy{dst: |%s|, src: |%s|, n |%i|}", dst2, src, msize);
 			else
-				cr_expect(memcmp(orig_m, your_m, strlen(src) + 10) == 0,"Your ft_memccpy doesnt work -> ft_memccpy{dst: |%s|, src: |%s|, n |%i|}", dst2, src, msize);
+				cr_expect(memcmp(orig_m, your_m, 10) == 0,"RETURN: Your ft_memccpy doesnt work -> ft_memccpy{dst: |%s|, src: |%s|, n |%i|}", dst2, src, msize);
 			free (src);
 		}
 	}
@@ -1335,7 +1377,7 @@ Test(memory, ft_memmove)
 		memset(dst2, 'A', msize);
 		srand(time(NULL) * i);
 
-		src = randstring(msize / 2);
+		src = CRIT_randmem(msize / 2);
 		memcpy(dst1, src, strlen(src) + 1);
 		memcpy(dst2, src, strlen(src) + 1);
 		if (src)
@@ -1368,10 +1410,21 @@ Test(memory, ft_memchr_segv1, .signal = SIGSEGV)
 
 Test(memory, ft_memchr)
 {
-	int		msize = 1000;
-	void	*dst = malloc (msize);
-	char	*src;
+	int				msize = 1000;
+	void			*dst = malloc (msize);
+	unsigned char	c;
+	char			*src;
+	void 			*orig;
+	void 			*yours;
 
+	
+	memset(dst, 'A', msize);
+	c = 255;
+	*(unsigned char *)(dst + 10) = c;
+	orig = memchr(dst, c, msize);
+	yours = ft_memchr(dst, c, msize);
+	cr_expect(orig == yours, "TYPECAST: Your ft_memchr doesnt work -> ft_memchr{dst: |%s|, char: |%c|,  n |%i|}", dst, c, msize);
+	
 	cr_expect_null(ft_memchr(NULL, 100, 0), "Your ft_memchr doesnt work -> ft_memchr{ dst : |NULL|, c : |100|, n : |0|}");
 
 	int bound = msize / 10;
@@ -1380,13 +1433,13 @@ Test(memory, ft_memchr)
 		memset(dst, 'A', msize);
 		srand(time(NULL) * i);
 
-		src = randstring(msize / 2);
+		src = CRIT_randstring(msize / 2);
 		memcpy(dst, src, strlen(src) + 1);
 		if (src)
 		{
-			char c = rand() % 127;
-			void *orig = memchr(dst, c, msize);
-			void *yours = ft_memchr(dst, c, msize);
+			c = rand() % 256;
+			orig = memchr(dst, c, msize);
+			yours = ft_memchr(dst, c, msize);
 
 			cr_expect(orig == yours, "Your ft_memchr doesnt work -> ft_memchr{dst: |%s|, char: |%c|,  n |%i|}", dst, c, msize);
 			free (src);
@@ -1395,6 +1448,8 @@ Test(memory, ft_memchr)
 	free (dst);
 }
 
+// this could be a false error if you check if "dst == src" and return 0 immediately (which is not part of original
+// functions but otherwise a good idea, no?)
 Test(memory, ft_memcmp_segv1, .signal = SIGSEGV)
 {
 	ft_memcmp(NULL, NULL, 1000);
@@ -1427,8 +1482,8 @@ Test(memory, ft_memcmp)
 		memset(dst2, 'A', msize);
 		srand(time(NULL) * i);
 
-		src1 = randstring(msize / 2);
-		src2 = randstring(msize / 2);
+		src1 = CRIT_randmem(msize / 2);
+		src2 = CRIT_randmem(msize / 2);
 		memcpy(dst1, src1, strlen(src1) + 1);
 		memcpy(dst2, src2, strlen(src2) + 1);
 		if (src1 && src2)
@@ -1486,7 +1541,7 @@ Test(strings, ft_substr)
 	len = 17;
 	dst = ft_substr(src, start, len);
 	cr_expect(strncmp(dst, "onzekere maaltijd", len + 1) == 0, "Your ft_substr doesnt work -> ft_substr{s : |%s|, start : |%i|, len : |%i|}", src, start, (int)len);
-	// check if returned string is mutable
+	// check mutability
 	dst[5] = 'a';
 	free(dst);
 
@@ -1502,6 +1557,8 @@ Test(strings, ft_substr)
 	len = 0;
 	dst = ft_substr(src, start, len);
 	cr_expect(strncmp(dst, "", len + 1) == 0, "Your ft_substr doesnt work -> ft_substr{s : |%s|, start : |%i|, len : |%i|}", src, start, (int)len);
+	// check mutability
+	dst[0] = 'a';
 	free(dst);
 
 	src = "abc";
@@ -1565,6 +1622,8 @@ Test(strings, ft_strjoin)
 	src2 = "def";
 	dst = ft_strjoin(src1, src2);
 	cr_expect(strcmp(dst, "abc def") == 0, "Your ft_strjoin doesnt work -> ft_strjoin{s1 : |%s|, s2 : |%s|}", src1, src2);
+	// mutability check
+	dst[0] = 'a';
 	free (dst);
 
 	src1 = "";
@@ -1577,6 +1636,8 @@ Test(strings, ft_strjoin)
 	src2 = "";
 	dst = ft_strjoin(src1, src2);
 	cr_expect(strcmp(dst, "") == 0, "Your ft_strjoin doesnt work -> ft_strjoin{s1 : |%s|, s2 : |%s|}", src1, src2);
+	// mutability check
+	dst[0] = 'a';
 	free (dst);
 
 	src1 = "a\tbcdefghi";
@@ -1586,17 +1647,13 @@ Test(strings, ft_strjoin)
 	free (dst);
 }
 
+
 Test(strings, ft_strtrim_segv1, .signal = SIGSEGV)
 { 
 	ft_strtrim(NULL, NULL);
 }
 
 Test(strings, ft_strtrim_segv2, .signal = SIGSEGV)
-{ 
-	ft_strtrim(strdup("abc"), NULL);
-}
-
-Test(strings, ft_strtrim_segv3, .signal = SIGSEGV)
 { 
 	ft_strtrim(NULL, strdup("abc"));
 }
@@ -1606,6 +1663,14 @@ Test(strings, ft_strtrim)
 	char *src;
 	char *set;
 	char *dst;
+
+	src = "abrakadabra";
+	set = NULL;
+	dst = ft_strtrim(src, set);
+	cr_expect(strcmp(dst, src) == 0, "Your ft_strtrim doesnt work -> ft_strtrim{s1 : |%s|, set : |%s|}", src, set);
+	// mutability test
+	dst[0] = 'a';
+	free (dst);
 
 	src = "abrakadabra";
 	set = "a";

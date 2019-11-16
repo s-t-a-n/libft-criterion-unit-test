@@ -6,7 +6,7 @@
 #    By: sverschu </var/mail/sverschu>                +#+                      #
 #                                                    +#+                       #
 #    Created: 2019/10/30 16:10:10 by sverschu      #+#    #+#                  #
-#    Updated: 2019/11/13 13:01:58 by sverschu      ########   odam.nl          #
+#    Updated: 2019/11/16 20:20:14 by sverschu      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,6 +40,6 @@ libft:
 	@$(MAKE) -C $(LIBFT_FOLDER) re
 
 f: all
-	@echo "Segfault errors means your functions are overprotected (but Moulinette will love you anyway)"
+	@echo "Segfault errors means your functions are overprotected i.e. they do not segfault where they probably should (but Moulinette will love you anyway)"
 	@./$(NAME)
 re: fclean all
