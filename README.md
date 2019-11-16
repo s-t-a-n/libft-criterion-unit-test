@@ -12,7 +12,7 @@ functions (a la Darwin atleast) are. You can ignore _segv notifications if you t
 3. After each error that is displayed by Criterion you will see a line number which corresponds to the line on which the test
    failed
 ### Options
-1. set 'PART2_PROTECT_CHECK' to 1 if you want to check whether your Part 2(substr, split, etc.) are overprotected. 
+1. set 'PART2_PROTECT_CHECK' to 1 in 'criterion_libft.c' if you want to check whether your Part 2(substr, split, etc.) are overprotected. 
 ### TO DO
 1. add ft_put.. functions
 2. add vastly bigger strings to check proper datatype usage
