@@ -668,6 +668,9 @@ Test(strings, ft_strlcat)
 	char *dst;
 	size_t n;
 
+	// original doesnt crash with this input!
+	ft_strlcat(NULL, strdup("a"), 0);
+
 	src = "";
 	dst = "";
 	memset(dst1, 'A', msize);
@@ -1524,7 +1527,7 @@ Test(strings, ft_substr_segv1, .signal = SIGSEGV)
 }
 #endif
 
-// your malloc'ing way to much!
+// your malloc'ing way to much for a string that can only contain 'C'!
 Test(strings, ft_substr_segv2, .signal = SIGSEGV)
 {
 	// huge size is due too memory paging (malloc(1) will reserve just one page (4KB of memory and you can freely write
@@ -1856,10 +1859,9 @@ Test(strings, ft_split)
 	free (expected);
 	CRIT_free_array((void **)returned);
 
-	len = 1;
+	len = 0;
 	expected = malloc(sizeof(char *) * (len + 1));
-	expected[0] = "";
-	expected[1] = NULL;
+	expected[0] = NULL;
 	src = "";
 	delim = '\0';
 	returned = ft_split(src, delim);
@@ -1867,10 +1869,9 @@ Test(strings, ft_split)
 	free (expected);
 	CRIT_free_array((void **)returned);
 
-	len = 1;
+	len = 0;
 	expected = malloc(sizeof(char *) * (len + 1));
-	expected[0] = "";
-	expected[1] = NULL;
+	expected[0] = NULL;
 	src = "\0\0\0\0\0\0";
 	delim = '\0';
 	returned = ft_split(src, delim);
