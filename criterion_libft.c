@@ -22,6 +22,8 @@ char *CRIT_randstring(size_t max_length)
         for (int i = 0; i < length; i++)
 		{
             random_string[i] = (char)rand() % 128;
+			if (random_string[i] == '\0' && rand() % 2)
+				random_string[i] = 42;
 		}
         random_string[length] = '\0';
         return random_string;
@@ -384,6 +386,18 @@ Test(strings,strnstr)
 	haystack = "123";
 	n = 100;
 	cr_expect_eq(ft_strnstr(haystack, needle, n), strnstr(haystack, needle, n),"Your ft_strnstr doesnt work for s1{%s} s2{%s} n{%i}", haystack, needle, n);
+
+	srand(time(NULL) * 83663);
+	int bound = 1000;
+	for (int i = -bound; i < bound; i++)
+	{
+		needle = CRIT_randstring(10);
+		haystack = CRIT_randstring(1000);
+		n = rand() % 1001;
+		cr_expect_eq(ft_strnstr(haystack, needle, n), strnstr(haystack, needle, n),"Your ft_strnstr doesnt work for s1<RANDOM STRING> s2<RANDOM STRING> n{%i}", n);
+		free(haystack);
+		free(needle);
+	}
 }
 
 Test(strings, ft_strchr_segv, .signal = SIGSEGV)
@@ -448,6 +462,16 @@ Test(strings, ft_strchr)
 	str = "baaaaaaaaaaaaaaaaaaaaaaab";
 	c = (int)'b';
 	cr_expect_eq(ft_strchr(str, c), strchr(str, c),"Your ft_strchr doesnt work for s1{%s} c{%i}", str, c);
+
+	srand(time(NULL) * 83616);
+	int bound = 1000;
+	for (int i = -bound; i < bound; i++)
+	{
+		str = CRIT_randstring(1000);
+		c = rand() % 256;
+		cr_expect_eq(ft_strchr(str, c), strchr(str, c),"Your ft_strchr doesnt work for s1 <RANDOM STRING> c{%i}", c);
+		free(str);
+	}
 }
 
 Test(strings, ft_strrchr_segv, .signal = SIGSEGV)
@@ -512,6 +536,16 @@ Test(strings, ft_strrchr)
 	str = "baaaaaaaaaaaaaaaaaaaaaaab";
 	c = (int)'b';
 	cr_expect_eq(ft_strrchr(str, c), strrchr(str, c),"Your ft_strrchr doesnt work for s1{%s} c{%i}", str, c);
+
+	srand(time(NULL) * 83216);
+	int bound = 1000;
+	for (int i = -bound; i < bound; i++)
+	{
+		str = CRIT_randstring(1000);
+		c = rand() % 256;
+		cr_expect_eq(ft_strrchr(str, c), strrchr(str, c),"Your ft_strrchr doesnt work for s1 <RANDOM STRING> c{%i}", c);
+		free(str);
+	}
 }
 
 Test(strings, ft_strlcpy_segv1, .signal = SIGSEGV)
@@ -644,6 +678,18 @@ Test(strings, ft_strlcpy)
 	cr_expect_eq(ft_strlcpy(dst1, src, n), strlcpy(dst2, src, n),"Your ft_strlcpy doesnt work for src{%s} n{%i}", src, (int)n);
 	cr_expect(memcmp(dst1, dst2, msize) == 0,"Your ft_strlcpy doesnt work -> strlcpy{%s}, ft_strlcpy{%s}", dst1, dst2);
 
+	srand(time(NULL) * 83616);
+	int bound = 1000;
+	for (int i = -bound; i < bound; i++)
+	{
+		src = CRIT_randstring(1000);
+		n = rand() % 256;
+		memset(dst1, 'A', msize);
+		memset(dst2, 'A', msize);
+		cr_expect_eq(ft_strlcpy(dst1, src, n), strlcpy(dst2, src, n),"Your ft_strlcpy doesnt work for src <RANDOM STRING> n{%i}", (int)n);
+		cr_expect(memcmp(dst1, dst2, msize) == 0,"Your ft_strlcpy doesnt work -> strlcpy <RANDOM STRING>, ft_strlcpy <RANDOM STRING>");
+		free(src);
+	}
 	free (dst1);
 	free (dst2);
 }
@@ -660,7 +706,7 @@ Test(strings, ft_strlcat_segv2, .signal = SIGSEGV)
 
 Test(strings, ft_strlcat)
 {
-	int msize = 100;
+	int msize = 1000;
 	char *dst1 = malloc(msize);
 	char *dst2 = malloc(msize);
 	char *src;
@@ -1000,6 +1046,23 @@ Test(strings, ft_strlcat)
 	cr_expect_eq(ft_strlcat(dst1, src, n), strlcat(dst2, src, n),"your ft_strlcat doesnt work for dst{%s} src{%s} n{%i}", dst, src, (int)n);
 	cr_expect(memcmp(dst1, dst2, msize) == 0,"Your ft_strlcat doesnt work -> strlcat{%s}, ft_strlcat{%s}", dst1, dst2);
 
+	srand(time(NULL) * 83616);
+	int bound = 1000;
+	for (int i = -bound; i < bound; i++)
+	{
+		src = CRIT_randstring(200);
+		dst = CRIT_randstring(200);
+		n = rand() % 1000;
+		memset(dst1, 'A', msize);
+		memset(dst2, 'A', msize);
+		strcpy(dst1, dst);
+		strcpy(dst2, dst);
+		cr_expect_eq(ft_strlcat(dst1, src, n), strlcat(dst2, src, n),"your ft_strlcat doesnt work for dst <RANDOM STRING> src <RANDOM STRING> n{%i}", (int)n);
+		cr_expect(memcmp(dst1, dst2, msize) == 0,"Your ft_strlcat doesnt work -> strlcat <RANDOM STRING>, ft_strlcat <RANDOM STRING>");
+		free (src);
+		free (dst);
+	}
+
 	free (dst1);
 	free (dst2);
 }
@@ -1060,6 +1123,20 @@ Test(strings, ft_strdup)
 	cr_expect(memcmp(dst1, dst2, msize) == 0,"5: Your ft_strdup doesnt work -> strdup{%s}", src);
 	free (dst1);
 	free (dst2);
+
+	srand(time(NULL) * 83616);
+	int bound = 1000;
+	for (int i = -bound; i < bound; i++)
+	{
+		src = CRIT_randstring(200);
+		dst1 = ft_strdup(src);
+		dst2 = strdup(src);
+		msize = strlen(src) + 1;
+		cr_expect(memcmp(dst1, dst2, msize) == 0,"5: Your ft_strdup doesnt work -> strdup <RANDOM STRING>");
+		free (src);
+		free (dst1);
+		free (dst2);
+	}
 } 
 
 Test(strings, ft_isalpha)
