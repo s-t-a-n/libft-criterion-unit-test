@@ -1753,17 +1753,17 @@ Test(strings, ft_substr)
 }
 
 #if PART2_PROTECT_CHECK == 1
-Test(strings, ft_strjoin_segv1, .signal = SIGSEGV)
+Test(strings, ft_strjoin_segv2, .signal = SIGSEGV)
 {
 	ft_strjoin(NULL, "abc");
 }
 
-Test(strings, ft_strjoin_segv2, .signal = SIGSEGV)
+Test(strings, ft_strjoin_segv3, .signal = SIGSEGV)
 {
 	ft_strjoin("abc", NULL);
 }
 
-Test(strings, ft_strjoin_segv3, .signal = SIGSEGV)
+Test(strings, ft_strjoin_segv4, .signal = SIGSEGV)
 { 
 	ft_strjoin(NULL, NULL);
 }
