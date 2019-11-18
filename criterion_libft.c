@@ -31,6 +31,24 @@ char *CRIT_randstring(size_t max_length)
 	return (NULL);
 }
 
+char *CRIT_randstring_nullbyte(size_t max_length)
+{
+	int length = rand() % (int)max_length;
+	char *random_string = malloc(sizeof(char) * (length + 1));
+    if (random_string)
+	{
+        for (int i = 0; i < length; i++)
+		{
+            random_string[i] = (char)rand() % 128;
+			if (random_string[i] == '\0')
+				random_string[i] = 42;
+		}
+        random_string[length] = '\0';
+        return random_string;
+    }
+	return (NULL);
+}
+
 unsigned char *CRIT_randmem(size_t max_length)
 {
 	int length = rand() % (int)max_length;
@@ -1685,6 +1703,20 @@ Test(strings, ft_substr)
 	dst = ft_substr(src, start, len);
 	cr_expect(strncmp(dst, "abc", len + 1) == 0, "Your ft_substr doesnt work -> ft_substr{s : |%s|, start : |%i|, len : |%i|}", src, start, (int)len);
 	free(dst);
+
+	// try to crash it
+	int msize = 1000;
+	int bound = 10000;
+	for (int i = -bound; i < bound; i++)
+	{
+		srand(time(NULL) * i);
+		src = CRIT_randstring(msize);
+		start = rand() % (msize / 2);
+		len = start + rand() % (msize / 2);
+		dst = ft_substr(src, start, len);
+		free (src);
+		free (dst);
+	}
 }
 
 #if PART2_PROTECT_CHECK == 1
@@ -1737,6 +1769,30 @@ Test(strings, ft_strjoin)
 	dst = ft_strjoin(src1, src2);
 	cr_expect(strcmp(dst, "a\tbcdefghiabc") == 0, "Your ft_strjoin doesnt work -> ft_strjoin{s1 : |%s|, s2 : |%s|}", src1, src2);
 	free (dst);
+
+	int msize = 1000;
+	char *dst1 = malloc(msize);
+	int bound = msize / 2;
+	for (int i = -bound; i < bound; i++)
+	{
+		srand(time(NULL) * i);
+		memset(dst1, 'A', msize);
+		src1 = CRIT_randstring_nullbyte(msize / 2);
+		src2 = CRIT_randstring_nullbyte(msize / 2);
+		strlcpy(dst1, src1, msize / 2);
+		strlcat(dst1, src2, msize);
+		if (src1 && src2)
+		{
+			char *dst2 = ft_strjoin(src1, src2);
+
+			cr_expect(strlen(dst1) == strlen(dst2), "STRLEN: Your ft_strjoin doesnt work -> ft_memcmp{s1: <RANDOM STRING>, s2: <RANDOM STRING>");
+			cr_expect(memcmp(dst1, dst2, strlen(dst1)) == 0, "MEMCMP: Your ft_strjoin doesnt work -> ft_memcmp{s1: <RANDOM STRING>, s2: <RANDOM STRING>");
+			free (src1);
+			free (src2);
+			free (dst2);
+		}
+	}
+	free (dst1);
 }
 
 #if PART2_PROTECT_CHECK == 1
@@ -1828,6 +1884,20 @@ Test(strings, ft_strtrim)
 	dst = ft_strtrim(src, set);
 	cr_expect(strcmp(dst, "\b\n") == 0, "Your ft_strtrim doesnt work -> ft_strtrim{s1 : |%s|, set : |%s|}", src, set);
 	free (dst);
+
+	// try to crash it
+	int msize = 1000;
+	int bound = 10000;
+	for (int i = -bound; i < bound; i++)
+	{
+		srand(time(NULL) * i);
+		src = CRIT_randstring(msize);
+		set = CRIT_randstring(10);
+		dst = ft_strtrim(src, set);
+		free(src);
+		free(set);
+		free(dst);
+	}
 }
 
 int		CRIT_is_array_equal(char **returned, char **expected, int len)
@@ -1954,6 +2024,19 @@ Test(strings, ft_split)
 	cr_expect(CRIT_is_array_equal(returned, expected, len) == 0, "Your ft_split doesnt work -> ft_split{s : |%s|, c : |%c|}", src, delim);
 	free (expected);
 	CRIT_free_array((void **)returned);
+
+	// try to crash it
+	int msize = 1000;
+	int bound = 10000;
+	for (int i = -bound; i < bound; i++)
+	{
+		srand(time(NULL) * i);
+		src = CRIT_randstring(msize);
+		delim = rand() % 128;
+		returned = ft_split(src, delim);
+		free(src);
+		CRIT_free_array((void **)returned);
+	}
 }
 
 Test(strings, ft_itoa)
@@ -1978,7 +2061,12 @@ Test(strings, ft_itoa)
 	{
 		src = i;
 		sprintf(cmp,"%i",src);
-		cr_expect(strcmp(ft_itoa(src), cmp) == 0, "Your ft_itoa doesnt work -> ft_itoa{n : |%i|\n", src);
+		cr_expect(strcmp(ft_itoa(src), cmp) == 0, "BOUNDED: Your ft_itoa doesnt work -> ft_itoa{n : |%i|\n", src);
+
+		// and again, randomized, just to fuck with the computer a bit
+		src = rand() % (INT_MAX);
+		sprintf(cmp,"%d",src);
+		cr_expect(strcmp(ft_itoa(src), cmp) == 0, "RANDOM: Your ft_itoa doesnt work -> ft_itoa{n : |%i|\n", src);
 	}
 	free (cmp);
 }
@@ -2052,4 +2140,14 @@ Test(strings, ft_strmapi)
 	dst = ft_strmapi(src, CRIT_f3);
 	cr_expect(strcmp(dst, cmp) == 0, "Your ft_strmapi doesnt work -> ft_strmapi{s : |%s|, f : |f1|", src);
 	free (dst);
+
+	// try to crash it
+	int msize = 1000;
+	int bound = 10000;
+	for (int i = -bound; i < bound; i++)
+	{
+		src = CRIT_randstring(msize);
+		dst = ft_strmapi(src, CRIT_f3);
+		free (dst);
+	}
 }
