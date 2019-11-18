@@ -11,6 +11,8 @@
 
 #define PART2_PROTECT_CHECK 0
 
+#define RANDOMIZED_TESTS 1
+
 #define PART1 1
 #define PART2 1
 
@@ -19,13 +21,13 @@
 
 char *CRIT_randstring(size_t max_length)
 {
-	int length = rand() % (int)--max_length;
+	int length = rand() % --max_length;
 	char *random_string = malloc(sizeof(char) * (length + 1));
     if (random_string)
 	{
         for (int i = 0; i < length; i++)
 		{
-            random_string[i] = (char)rand() % 128;
+            random_string[i] = rand() % 128;
 			if (random_string[i] == '\0' && rand() % 2)
 				random_string[i] = 42;
 		}
@@ -37,13 +39,13 @@ char *CRIT_randstring(size_t max_length)
 
 char *CRIT_randstring_nullbyte(size_t max_length)
 {
-	int length = rand() % (int)--max_length;
+	int length = rand() % --max_length;
 	char *random_string = malloc(sizeof(char) * (length + 1));
     if (random_string)
 	{
         for (int i = 0; i < length; i++)
 		{
-            random_string[i] = (char)rand() % 128;
+            random_string[i] = rand() % 128;
 			if (random_string[i] == '\0')
 				random_string[i] = 42;
 		}
@@ -55,13 +57,13 @@ char *CRIT_randstring_nullbyte(size_t max_length)
 
 unsigned char *CRIT_randmem(size_t max_length)
 {
-	int length = rand() % (int)--max_length;
+	int length = rand() % --max_length;
 	unsigned char *random_string = malloc(sizeof(unsigned char) * (length + 1));
     if (random_string)
 	{
         for (int i = 0; i < length; i++)
 		{
-            random_string[i] = (unsigned char)rand() % 256;
+            random_string[i] = rand() % 256;
 			if (random_string[i] == '\0' && rand() % 2)
 				random_string[i] = 42;
 		}
@@ -90,6 +92,7 @@ Test(strings, ft_strlen)
 	str = "";
     cr_expect_eq(ft_strlen(str), strlen(str), "Your ft_strlen doesnt work for |%s|",str);
 
+#if RANDOMIZED_TESTS
 	int bound = 1000;
 	srand(time(NULL) * 470);
 	for (int i = -bound; i < bound; i++)
@@ -98,6 +101,7 @@ Test(strings, ft_strlen)
     	cr_expect_eq(ft_strlen(str), strlen(str), "Your ft_strlen doesnt work for <RANDOM STRING>");
 		free(str);
 	}
+#endif
 }
 
 Test(strings, ft_strncmp_segv1, .signal = SIGSEGV)
@@ -252,6 +256,7 @@ Test(strings, ft_strncmp)
 	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%i}", str1, str2, n);
 
 
+#if RANDOMIZED_TESTS
 	srand(time(NULL) * 8366);
 	int bound = 1000;
 	for (int i = -bound; i < bound; i++)
@@ -263,6 +268,7 @@ Test(strings, ft_strncmp)
 		free(str1);
 		free(str2);
 	}
+#endif
 }
 
 Test(strings, ft_strnstr_segv1, .signal = SIGSEGV)
@@ -411,6 +417,7 @@ Test(strings,strnstr)
 	n = 100;
 	cr_expect_eq(ft_strnstr(haystack, needle, n), strnstr(haystack, needle, n),"Your ft_strnstr doesnt work for s1{%s} s2{%s} n{%i}", haystack, needle, n);
 
+#if RANDOMIZED_TESTS
 	srand(time(NULL) * 83663);
 	int bound = 1000;
 	for (int i = -bound; i < bound; i++)
@@ -422,6 +429,7 @@ Test(strings,strnstr)
 		free(haystack);
 		free(needle);
 	}
+#endif
 }
 
 Test(strings, ft_strchr_segv, .signal = SIGSEGV)
@@ -487,6 +495,7 @@ Test(strings, ft_strchr)
 	c = (int)'b';
 	cr_expect_eq(ft_strchr(str, c), strchr(str, c),"Your ft_strchr doesnt work for s1{%s} c{%i}", str, c);
 
+#if RANDOMIZED_TESTS
 	srand(time(NULL) * 83616);
 	int bound = 1000;
 	for (int i = -bound; i < bound; i++)
@@ -496,6 +505,7 @@ Test(strings, ft_strchr)
 		cr_expect_eq(ft_strchr(str, c), strchr(str, c),"Your ft_strchr doesnt work for s1 <RANDOM STRING> c{%i}", c);
 		free(str);
 	}
+#endif
 }
 
 Test(strings, ft_strrchr_segv, .signal = SIGSEGV)
@@ -561,6 +571,7 @@ Test(strings, ft_strrchr)
 	c = (int)'b';
 	cr_expect_eq(ft_strrchr(str, c), strrchr(str, c),"Your ft_strrchr doesnt work for s1{%s} c{%i}", str, c);
 
+#if RANDOMIZED_TESTS
 	srand(time(NULL) * 83216);
 	int bound = 1000;
 	for (int i = -bound; i < bound; i++)
@@ -570,6 +581,7 @@ Test(strings, ft_strrchr)
 		cr_expect_eq(ft_strrchr(str, c), strrchr(str, c),"Your ft_strrchr doesnt work for s1 <RANDOM STRING> c{%i}", c);
 		free(str);
 	}
+#endif
 }
 
 Test(strings, ft_strlcpy_segv1, .signal = SIGSEGV)
@@ -702,6 +714,7 @@ Test(strings, ft_strlcpy)
 	cr_expect_eq(ft_strlcpy(dst1, src, n), strlcpy(dst2, src, n),"Your ft_strlcpy doesnt work for src{%s} n{%i}", src, (int)n);
 	cr_expect(memcmp(dst1, dst2, msize) == 0,"Your ft_strlcpy doesnt work -> strlcpy{%s}, ft_strlcpy{%s}", dst1, dst2);
 
+#if RANDOMIZED_TESTS
 	srand(time(NULL) * 83616);
 	int bound = 1000;
 	for (int i = -bound; i < bound; i++)
@@ -714,6 +727,7 @@ Test(strings, ft_strlcpy)
 		cr_expect(memcmp(dst1, dst2, msize) == 0,"Your ft_strlcpy doesnt work -> strlcpy <RANDOM STRING>, ft_strlcpy <RANDOM STRING>");
 		free(src);
 	}
+#endif
 	free (dst1);
 	free (dst2);
 }
@@ -1070,6 +1084,7 @@ Test(strings, ft_strlcat)
 	cr_expect_eq(ft_strlcat(dst1, src, n), strlcat(dst2, src, n),"your ft_strlcat doesnt work for dst{%s} src{%s} n{%i}", dst, src, (int)n);
 	cr_expect(memcmp(dst1, dst2, msize) == 0,"Your ft_strlcat doesnt work -> strlcat{%s}, ft_strlcat{%s}", dst1, dst2);
 
+#if RANDOMIZED_TESTS
 	srand(time(NULL) * 83616);
 	int bound = 1000;
 	for (int i = -bound; i < bound; i++)
@@ -1086,7 +1101,7 @@ Test(strings, ft_strlcat)
 		free (src);
 		free (dst);
 	}
-
+#endif
 	free (dst1);
 	free (dst2);
 }
@@ -1148,6 +1163,7 @@ Test(strings, ft_strdup)
 	free (dst1);
 	free (dst2);
 
+#if RANDOMIZED_TESTS
 	srand(time(NULL) * 83616);
 	int bound = 1000;
 	for (int i = -bound; i < bound; i++)
@@ -1161,6 +1177,7 @@ Test(strings, ft_strdup)
 		free (dst1);
 		free (dst2);
 	}
+#endif
 } 
 
 Test(strings, ft_isalpha)
@@ -1288,6 +1305,7 @@ Test(strings, ft_atoi)
 	str = "-0";
     cr_expect_eq(ft_atoi(str), atoi(str), "Your ft_atoi doesnt work for |%s|", str);
 
+#if RANDOMIZED_TESTS
 	str = malloc(256);
 	long long bound  = 10001;
 	for (long long i = -bound; i < bound; i++)
@@ -1302,6 +1320,7 @@ Test(strings, ft_atoi)
     	cr_expect_eq(ft_atoi(str), atoi(str), "Your ft_atoi doesnt work for |%s|", str);
 	}
 	free (str);
+#endif
 }
 
 Test(memory, ft_memset_segv1, .signal = SIGSEGV)
@@ -1380,12 +1399,12 @@ Test(memory, ft_memcpy)
 	int		msize = 1000;
 	void	*dst1 = malloc (msize);
 	void	*dst2 = malloc (msize);
-	unsigned char	*src;
 
 	cr_expect_null(ft_memcpy(NULL, NULL, 1000), "Your ft_memcpy doesnt work -> ft_memcpy{ dst : |NULL|, src: |NULL|, n |1000|}");
 	cr_expect_null(ft_memcpy(NULL, dst1, 0), "Your ft_memcpy doesnt work -> ft_memcpy{ dst : |NULL|, src: |%s|, n |0|}", dst1);
 	cr_expect(ft_memcpy(dst1, NULL, 0) == dst1, "Your ft_memcpy doesnt work -> ft_memcpy{ dst : |%s|, src: |NULL|, n |0|}", dst1);
 
+#if RANDOMIZED_TESTS
 	int bound = msize / 10;
 	for (int i = 1; i < bound; i++)
 	{
@@ -1393,7 +1412,7 @@ Test(memory, ft_memcpy)
 		memset(dst2, 'A', msize);
 		srand(time(NULL) * i);
 
-		src = CRIT_randmem(msize);
+		unsigned char *src = CRIT_randmem(msize);
 		if (src)
 		{
 			memcpy(dst1, src, strlen((char *)src) + 1);
@@ -1403,6 +1422,7 @@ Test(memory, ft_memcpy)
 			free (src);
 		}
 	}
+#endif
 	free (dst1);
 	free (dst2);
 }
@@ -1427,11 +1447,11 @@ Test(memory, ft_memccpy)
 	int		msize = 1000;
 	void	*dst1 = malloc (msize);
 	void	*dst2 = malloc (msize);
-	unsigned char	*src;
 
 	cr_expect_null(ft_memccpy(NULL, dst1, 0, 0), "Your ft_memccpy doesnt work -> ft_memccpy{ dst : |NULL|, src: |%s|, n |0|}", dst1);
 	cr_expect_null(ft_memccpy(dst1, NULL, 0, 0), "Your ft_memccpy doesnt work -> ft_memccpy{ dst : |%s|, src: |NULL|, n |0|}", dst1);
 
+#if RANDOMIZED_TESTS
 	int bound = msize / 10;
 	for (int i = 1; i < bound; i++)
 	{
@@ -1439,7 +1459,7 @@ Test(memory, ft_memccpy)
 		memset(dst2, 'A', msize);
 		srand(time(NULL) * i);
 
-		src = CRIT_randmem(msize);
+		unsigned char *src = CRIT_randmem(msize);
 		if (src)
 		{
 			int rand_char = rand() % 256;
@@ -1453,6 +1473,7 @@ Test(memory, ft_memccpy)
 			free (src);
 		}
 	}
+#endif
 	free (dst1);
 	free (dst2);
 }
@@ -1472,14 +1493,13 @@ Test(memory, ft_memmove)
 	int		msize = 1000;
 	void	*dst1 = malloc (msize);
 	void	*dst2 = malloc (msize);
-	unsigned char	*src;
-
 
 	cr_expect_null(ft_memmove(NULL, NULL, 1000), "Your ft_memmove doesnt work -> ft_memmove{ dst : |NULL|, src: |NULL|, n |1000|}");
 	cr_expect_null(ft_memmove(NULL, NULL, 0), "Your ft_memmove doesnt work -> ft_memmove{ dst : |NULL|, src: |%s|, n |0|}", dst1);
 	cr_expect_null(ft_memmove(NULL, dst1, 0), "Your ft_memmove doesnt work -> ft_memmove{ dst : |NULL|, src: |%s|, n |0|}", dst1);
 	cr_expect(ft_memmove(dst1, NULL, 0) == dst1, "Your ft_memmove doesnt work -> ft_memmove{ dst : |%s|, src: |NULL|, n |0|}", dst1);
 
+#if RANDOMIZED_TESTS
 	int bound = msize / 10;
 	for (int i = 1; i < bound; i++)
 	{
@@ -1487,7 +1507,7 @@ Test(memory, ft_memmove)
 		memset(dst2, 'A', msize);
 		srand(time(NULL) * i);
 
-		src = CRIT_randmem(msize / 2);
+		unsigned char *src = CRIT_randmem(msize / 2);
 		if (src)
 		{
 			memcpy(dst1, src, strlen((char *)src) + 1);
@@ -1509,6 +1529,7 @@ Test(memory, ft_memmove)
 			free (src);
 		}
 	}
+#endif
 	free (dst1);
 	free (dst2);
 }
@@ -1523,7 +1544,6 @@ Test(memory, ft_memchr)
 	int				msize = 1000;
 	void			*dst = malloc (msize);
 	unsigned char	c;
-	unsigned char	*src;
 	void 			*orig;
 	void 			*yours;
 
@@ -1537,16 +1557,16 @@ Test(memory, ft_memchr)
 	
 	cr_expect_null(ft_memchr(NULL, 100, 0), "NULL: Your ft_memchr doesnt work -> ft_memchr{ dst : |NULL|, c : |100|, n : |0|}");
 
-	int bound = msize / 10;
-	for (int i = 1; i < bound; i++)
+#if RANDOMIZED_TESTS
+	int bound = msize;
+	for (int i = -bound; i < bound; i++)
 	{
 		memset(dst, 'A', msize);
 		srand(time(NULL) * i);
-
-		src = CRIT_randmem(msize / 2);
-		memcpy(dst, src, strlen((char *)src) + 1);
+		unsigned char *src = CRIT_randmem(msize / 2);
 		if (src)
 		{
+			memcpy(dst, src, strlen((char *)src) + 1);
 			c = rand() % 256;
 			orig = memchr(dst, c, msize);
 			yours = ft_memchr(dst, c, msize);
@@ -1555,6 +1575,7 @@ Test(memory, ft_memchr)
 			free (src);
 		}
 	}
+#endif
 	free (dst);
 }
 
@@ -1580,11 +1601,10 @@ Test(memory, ft_memcmp)
 	int		msize = 1000;
 	unsigned char	*dst1 = malloc(msize);
 	unsigned char	*dst2 = malloc(msize);
-	unsigned char	*src1;
-	unsigned char	*src2;
 
 	cr_expect(ft_memcmp(NULL, NULL, 0) == 0, "Your ft_memcmp doesnt work -> ft_memcmp{ s1 : |NULL|, s2 : |NULL|, n : |0|}");
 
+#if RANDOMIZED_TESTS
 	int bound = msize / 10;
 	for (int i = 1; i < bound; i++)
 	{
@@ -1592,8 +1612,8 @@ Test(memory, ft_memcmp)
 		memset(dst2, 'A', msize);
 		srand(time(NULL) * i);
 
-		src1 = CRIT_randmem(msize / 2);
-		src2 = CRIT_randmem(msize / 2);
+		unsigned char *src1 = CRIT_randmem(msize / 2);
+		unsigned char *src2 = CRIT_randmem(msize / 2);
 		memcpy(dst1, src1, strlen((char *)src1) + 1);
 		memcpy(dst2, src2, strlen((char *)src2) + 1);
 		if (src1 && src2)
@@ -1605,6 +1625,7 @@ Test(memory, ft_memcmp)
 			free (src2);
 		}
 	}
+#endif
 	free (dst1);
 	free (dst2);
 } 
@@ -1714,6 +1735,7 @@ Test(strings, ft_substr)
 	cr_expect(strncmp(dst, "abc", len + 1) == 0, "Your ft_substr doesnt work -> ft_substr{s : |%s|, start : |%i|, len : |%i|}", src, start, (int)len);
 	free(dst);
 
+#if RANDOMIZED_TESTS
 	// try to crash it
 	int msize = 1000;
 	int bound = 10000;
@@ -1727,6 +1749,7 @@ Test(strings, ft_substr)
 		free (src);
 		free (dst);
 	}
+#endif
 }
 
 #if PART2_PROTECT_CHECK == 1
@@ -1780,6 +1803,7 @@ Test(strings, ft_strjoin)
 	cr_expect(strcmp(dst, "a\tbcdefghiabc") == 0, "Your ft_strjoin doesnt work -> ft_strjoin{s1 : |%s|, s2 : |%s|}", src1, src2);
 	free (dst);
 
+#if RANDOMIZED_TESTS
 	int msize = 1000;
 	char *dst1 = malloc(msize);
 	int bound = msize / 2;
@@ -1803,6 +1827,7 @@ Test(strings, ft_strjoin)
 		}
 	}
 	free (dst1);
+#endif
 }
 
 #if PART2_PROTECT_CHECK == 1
@@ -1895,6 +1920,7 @@ Test(strings, ft_strtrim)
 	cr_expect(strcmp(dst, "\b\n") == 0, "Your ft_strtrim doesnt work -> ft_strtrim{s1 : |%s|, set : |%s|}", src, set);
 	free (dst);
 
+#if RANDOMIZED_TESTS
 	// try to crash it
 	int msize = 1000;
 	int bound = 10000;
@@ -1908,6 +1934,7 @@ Test(strings, ft_strtrim)
 		free(set);
 		free(dst);
 	}
+#endif
 }
 
 int		CRIT_is_array_equal(char **returned, char **expected, int len)
@@ -2035,6 +2062,7 @@ Test(strings, ft_split)
 	free (expected);
 	CRIT_free_array((void **)returned);
 
+#if RANDOMIZED_TESTS
 	// try to crash it
 	int msize = 1000;
 	int bound = 10000;
@@ -2047,6 +2075,7 @@ Test(strings, ft_split)
 		free(src);
 		CRIT_free_array((void **)returned);
 	}
+#endif
 }
 
 Test(strings, ft_itoa)
@@ -2066,6 +2095,7 @@ Test(strings, ft_itoa)
 	sprintf(cmp,"%i",src);
 	cr_expect(strcmp(ft_itoa(src), cmp) == 0, "Your ft_itoa doesnt work -> ft_itoa{n : |%i|\n", src);
 
+#if RANDOMIZED_TESTS
 	int bound = 10000;
 	for (int i = -bound; i < bound; i++)
 	{
@@ -2078,6 +2108,7 @@ Test(strings, ft_itoa)
 		sprintf(cmp,"%d",src);
 		cr_expect(strcmp(ft_itoa(src), cmp) == 0, "RANDOM: Your ft_itoa doesnt work -> ft_itoa{n : |%i|\n", src);
 	}
+#endif
 	free (cmp);
 }
 
@@ -2151,6 +2182,7 @@ Test(strings, ft_strmapi)
 	cr_expect(strcmp(dst, cmp) == 0, "Your ft_strmapi doesnt work -> ft_strmapi{s : |%s|, f : |f1|", src);
 	free (dst);
 
+#if RANDOMIZED_TESTS
 	// try to crash it
 	int msize = 1000;
 	int bound = 10000;
@@ -2160,6 +2192,7 @@ Test(strings, ft_strmapi)
 		dst = ft_strmapi(src, CRIT_f3);
 		free (dst);
 	}
+#endif
 }
 
 #endif
