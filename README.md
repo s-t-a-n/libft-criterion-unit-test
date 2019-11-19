@@ -12,6 +12,7 @@ functions (a la Darwin atleast) are. You can ignore _segv notifications if you t
 3. After each error that is displayed by Criterion you will see a line number which corresponds to the line on which the test
    failed
 ### Options
+0. Set the following options in the top of criterion_libft.c (yeah yeah, headers are nice and all)
 1. set 'PART2_PROTECT_CHECK' to 1 in 'criterion_libft.c' if you want to check whether your Part 2(substr, split, etc.) are overprotected. 
 2. set PART1 or PART2 to 1 or 0 depending on whether you want to test it
 3. set ITOA_ATOI_CHECK_ENTIRE_RANGE to 1 if you want to go full OCd on itoa and atoi and check all between INT_MIN and INT_MAX
