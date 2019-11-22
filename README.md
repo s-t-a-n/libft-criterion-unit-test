@@ -18,7 +18,7 @@ functions (a la Darwin atleast) are. You can ignore _segv notifications if you t
 3. set STRLCAT_STRICT_SIMILARITY to 1 if you want to check if strlcat behave strictly the same way as the original (probably not that important) 
 3. set ITOA_ATOI_CHECK_ENTIRE_RANGE to 1 if you want to go full OCd on itoa and atoi and check all between INT_MIN and INT_MAX
 4. set RANDOMIZED_TESTS to 0 to disable randomized testing if your console is flooded by it's results
-5. set SPLIT_EXPECT_ARRAY to 0 if you return NULL in your ft_split when input string only contains delimiters or string doesnt exist
+5. set SPLIT_EXPECT_ARRAY to 0 if you return NULL as the zero'th position in your ft_split when input string only contains delimiters or string doesnt exist
 ### TO DO
 1. add ft_put.. functions
 2. add vastly bigger strings to check proper datatype usage
