@@ -20,6 +20,9 @@
 // 			expect NULL as output
 #define SPLIT_EXPECT_ARRAY 1
 
+// define STRLCAT_STRICT_SIMILARITY as 1 to check an edge case which is probably not that important
+#define STRLCAT_STRICT_SIMILARITY 0 
+
 // define ITOA_ATOI_CHECK_ENTIRE_RANGE as 1 to go full OCD and check from INT_MIN to INT_MAX instead of from -10000 : 10000; this will drastically slow down the test
 #define ITOA_ATOI_CHECK_ENTIRE_RANGE 0
 
@@ -773,8 +776,10 @@ Test(strings, ft_strlcat)
 	char *dst;
 	size_t n;
 
+#if STRLCAT_STRICT_SIMILARITY
 	// original doesnt crash with this input!
 	ft_strlcat(NULL, strdup("a"), 0);
+#endif
 
 	src = "";
 	dst = "";

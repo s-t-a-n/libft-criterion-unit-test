@@ -36,13 +36,13 @@ _criterion()
 	if [ "$(grep C_INCLUDE_PATH /Users/$USER/.zshrc)" == "" ] || [ "$(grep LIBRARY_PATH /Users/$USER/.zshrc)" == "" ]
 	then
 		echo "--- Adding ZSH environment variables C_INCLUDE_PATH and LIBRARY_PATH to .zshrc"
-		echo "export C_INCLUDE_PATH=\"/Users/$USER/.brew/include:$C_INCLUDE_PATH\"" >> /Users/$USER/.zshrc
-		echo "export LIBRARY_PATH=\"/Users/$USER/.brew/lib:$LIBRARY_PATH\"" >> /Users/$USER/.zshrc
+		echo "export C_INCLUDE_PATH=\"/Users/$USER/.brew/include:\$C_INCLUDE_PATH\"" >> /Users/$USER/.zshrc
+		echo "export LIBRARY_PATH=\"/Users/$USER/.brew/lib:\$LIBRARY_PATH\"" >> /Users/$USER/.zshrc
 	else
 		echo '--- ZSH environment variables C_INCLUDE_PATH and LIBRARY_PATH are already present.'
 		echo "Manually add the following to your ~/.zshrc if necessary (or set these variables when needed):"
-		echo "export C_INCLUDE_PATH=\"/Users/$USER/.brew/include:$C_INCLUDE_PATH\""
-		echo "export LIBRARY_PATH=\"/Users/$USER/.brew/lib:$LIBRARY_PATH\""
+		echo "export C_INCLUDE_PATH=\"/Users/$USER/.brew/include:\$C_INCLUDE_PATH\""
+		echo "export LIBRARY_PATH=\"/Users/$USER/.brew/lib:\$LIBRARY_PATH\""
 	fi
 }
 

@@ -6,7 +6,7 @@
 #    By: sverschu </var/mail/sverschu>                +#+                      #
 #                                                    +#+                       #
 #    Created: 2019/10/30 16:10:10 by sverschu      #+#    #+#                  #
-#    Updated: 2019/11/19 17:00:45 by sverschu      ########   odam.nl          #
+#    Updated: 2019/11/22 17:52:08 by sverschu      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,5 +40,6 @@ libft:
 	@$(MAKE) -C $(LIBFT_FOLDER) re
 
 love: all
+	@echo "Functions like split and trim are open to interpretation; your idea of these functions might be different than mine."
 	@./$(NAME)
 re: fclean all
