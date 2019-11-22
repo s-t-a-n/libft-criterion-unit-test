@@ -523,7 +523,7 @@ Test(strings, ft_strchr)
 #if RANDOMIZED_TESTS
 	for (long i = -ITERATIONS; i < ITERATIONS; i++)
 	{
-		str = CRIT_randstring(1000);
+		str = CRIT_randstring(MEMSIZE);
 		c = rand() % 256;
 		cr_expect_eq(ft_strchr(str, c), strchr(str, c),"Your ft_strchr doesnt work for s1 <RANDOM STRING> c{%d}", c);
 		free(str);
@@ -597,7 +597,7 @@ Test(strings, ft_strrchr)
 #if RANDOMIZED_TESTS
 	for (int i = -ITERATIONS; i < ITERATIONS; i++)
 	{
-		str = CRIT_randstring(1000);
+		str = CRIT_randstring(MEMSIZE);
 		c = rand() % 256;
 		cr_expect_eq(ft_strrchr(str, c), strrchr(str, c),"Your ft_strrchr doesnt work for s1 <RANDOM STRING> c{%i}", c);
 		free(str);
@@ -622,6 +622,13 @@ Test(strings, ft_strlcpy)
 	char *src;
 	size_t n;
 
+	src = "\200";
+	n = 0;
+	memset(dst1, 'A', MEMSIZE);
+	memset(dst2, 'A', MEMSIZE);
+	cr_expect_eq(ft_strlcpy(dst1, src, n), strlcpy(dst2, src, n),"Your ft_strlcpy doesnt work for src{%s} n{%i}", src, (int)n);
+	cr_expect(memcmp(dst1, dst2, MEMSIZE) == 0,"Your ft_strlcpy doesnt work -> strlcpy{%s}, ft_strlcpy{%s}", dst1, dst2);
+
 	src = "";
 	n = 0;
 	memset(dst1, 'A', MEMSIZE);
@@ -638,6 +645,27 @@ Test(strings, ft_strlcpy)
 
 	src = "";
 	n = 100;
+	memset(dst1, 'A', MEMSIZE);
+	memset(dst2, 'A', MEMSIZE);
+	cr_expect_eq(ft_strlcpy(dst1, src, n), strlcpy(dst2, src, n),"Your ft_strlcpy doesnt work for src{%s} n{%i}", src, (int)n);
+	cr_expect(memcmp(dst1, dst2, MEMSIZE) == 0,"Your ft_strlcpy doesnt work -> strlcpy{%s}, ft_strlcpy{%s}", dst1, dst2);
+
+	src = "a";
+	n = 0;
+	memset(dst1, 'A', MEMSIZE);
+	memset(dst2, 'A', MEMSIZE);
+	cr_expect_eq(ft_strlcpy(dst1, src, n), strlcpy(dst2, src, n),"Your ft_strlcpy doesnt work for src{%s} n{%i}", src, (int)n);
+	cr_expect(memcmp(dst1, dst2, MEMSIZE) == 0,"Your ft_strlcpy doesnt work -> strlcpy{%s}, ft_strlcpy{%s}", dst1, dst2);
+
+	src = "a";
+	n = 1;
+	memset(dst1, 'A', MEMSIZE);
+	memset(dst2, 'A', MEMSIZE);
+	cr_expect_eq(ft_strlcpy(dst1, src, n), strlcpy(dst2, src, n),"Your ft_strlcpy doesnt work for src{%s} n{%i}", src, (int)n);
+	cr_expect(memcmp(dst1, dst2, MEMSIZE) == 0,"Your ft_strlcpy doesnt work -> strlcpy{%s}, ft_strlcpy{%s}", dst1, dst2);
+
+	src = "a";
+	n = 2;
 	memset(dst1, 'A', MEMSIZE);
 	memset(dst2, 'A', MEMSIZE);
 	cr_expect_eq(ft_strlcpy(dst1, src, n), strlcpy(dst2, src, n),"Your ft_strlcpy doesnt work for src{%s} n{%i}", src, (int)n);
@@ -772,6 +800,16 @@ Test(strings, ft_strlcat)
 	// original doesnt crash with this input!
 	ft_strlcat(NULL, strdup("a"), 0);
 #endif
+
+	src = "\200";
+	dst = "\255";
+	memset(dst1, 'A', MEMSIZE);
+	memset(dst2, 'A', MEMSIZE);
+	strcpy(dst1, dst);
+	strcpy(dst2, dst);
+	n = 2;
+	cr_expect_eq(ft_strlcat(dst1, src, n), strlcat(dst2, src, n),"Your ft_strlcat doesnt work for dst{%s} src{%s} n{%i}", dst, src, (int)n);
+	cr_expect(memcmp(dst1, dst2, MEMSIZE) == 0,"Your ft_strlcat doesnt work -> strlcat{%s}, ft_strlcat{%s}", dst1, dst2);
 
 	src = "";
 	dst = "";
@@ -1133,6 +1171,13 @@ Test(strings, ft_strdup)
 	char *dst1;
 	char *dst2;
 	char *src;
+
+	src = "\255";
+	dst1 = ft_strdup(src);
+	dst2 = strdup(src);
+	cr_expect(memcmp(dst1, dst2, strlen(src) + 1) == 0,"1: Your ft_strdup doesnt work -> strdup{%s}", src);
+	free (dst1);
+	free (dst2);
 
 	src = "";
 	dst1 = ft_strdup(src);

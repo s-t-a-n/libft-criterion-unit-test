@@ -6,7 +6,7 @@
 #    By: sverschu </var/mail/sverschu>                +#+                      #
 #                                                    +#+                       #
 #    Created: 2019/10/30 16:10:10 by sverschu      #+#    #+#                  #
-#    Updated: 2019/11/22 19:34:06 by sverschu      ########   odam.nl          #
+#    Updated: 2019/11/22 22:26:16 by sverschu      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ SRC = criterion_libft.c $(LIBFT_FOLDER)/libft.a
 
 # compiler and linker
 CC = gcc
-CC_FLAGS = -Werror -Wextra -Wall -lcriterion
+CC_FLAGS = -Werror -Wextra -Wall -lcriterion -fsanitize=address
 
 # commands
 all: libft $(NAME)
