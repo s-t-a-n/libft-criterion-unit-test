@@ -2,7 +2,8 @@
 exit 42;
 
 git clone https://github.com/alelievr/libft-unit-test.git libft-unit-tests
-#git clone https://github.com/jtoty/Libftest.git libft-unit-test-ancient
+
+# these tests are best served with -fsanitize=address
 git clone https://github.com/t0mm4rx/libftdestructor libft-destructor && brew install python3
 git clone https://github.com/Night-squad/libft-war-machine-v2019.git libft-warmachine
 

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# change this to your libft folder
+export LIBFT_FOLDER=../libft
+
+# amount of times smokebreak will try to fuck with your code before giving up
+export SMOKEBREAK_MAX=250
+
+# DEBUG INTERNALS
+export EXEC=./run-test

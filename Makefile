@@ -6,12 +6,9 @@
 #    By: sverschu </var/mail/sverschu>                +#+                      #
 #                                                    +#+                       #
 #    Created: 2019/10/30 16:10:10 by sverschu      #+#    #+#                  #
-#    Updated: 2019/11/22 22:26:16 by sverschu      ########   odam.nl          #
+#    Updated: 2019/11/23 23:45:45 by sverschu      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
-
-# ONLY CHANGE "LIBFT_FOLDER"
-LIBFT_FOLDER = ../libft
 
 # ONLY CHANGE IF THE GODS HAVE DECIDED TO USE PROPER FOLDERS
 LIBFT_INC = $(LIBFT_FOLDER)
@@ -22,14 +19,14 @@ NAME = run-test
 SRC = criterion_libft.c $(LIBFT_FOLDER)/libft.a
 
 # compiler and linker
-CC = gcc
-CC_FLAGS = -Werror -Wextra -Wall -lcriterion -fsanitize=address
+CC = clang
+CC_FLAGS = -Werror -Wextra -Wall -lcriterion
 
 # commands
 all: libft $(NAME)
 
 $(NAME): $(SRC)
-	@$(CC) $(CC_FLAGS) -I$(LIBFT_INC) $(SRC) -o $(NAME)
+	@$(CC) $(CC_FLAGS) $(EXT_FLAGS) -I$(LIBFT_INC) $(SRC) -o $(NAME)
 
 clean:
 	@$(RM) $(OBJ) $(BONUS_OBJ)

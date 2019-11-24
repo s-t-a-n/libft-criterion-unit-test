@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   criterion_libft.c                                  :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: sverschu </var/mail/sverschu>                +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2019/11/24 13:21:37 by sverschu      #+#    #+#                 */
+/*   Updated: 2019/11/24 14:50:04 by sverschu      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,28 +29,59 @@
 // define SPLIT_EXPECT_ARRAY as 0 if the following applies to your code:
 // 		if string only contains delimiters or string doesnt exist ->
 // 			expect an array with a NULL on the zero'th position
-#define SPLIT_EXPECT_ARRAY 1
+
+#ifndef SPLIT_EXPECT_ARRAY
+# define SPLIT_EXPECT_ARRAY				0
+#endif
 
 // define STRLCAT_STRICT_SIMILARITY as 1 to check an edge case which is probably not that important
-#define STRLCAT_STRICT_SIMILARITY 0 
+#ifndef STRLCAT_STRICT_SIMILARITY
+# define STRLCAT_STRICT_SIMILARITY		0
+#endif
+
+// define STRNCMP_SIGN as 1 to do only sign comparison, nut signed number comparison
+#ifndef STRNCMP_SIGN
+# define STRNCMP_SIGN					1
+#endif
 
 // define ITOA_ATOI_CHECK_ENTIRE_RANGE as 1 to go full OCD and check from INT_MIN to INT_MAX instead of from -10000 : 10000; this will take hours dont do this
-#define ITOA_ATOI_CHECK_ENTIRE_RANGE 0
+#ifndef ITOA_ATOI_CHECK_ENTIRE_RANGE
+# define ITOA_ATOI_CHECK_ENTIRE_RANGE	0
+#endif
 
-// disable a part if needed
-#define PART1 1
-#define PART2 1
+// disable a part if needed by setting it to 0
+#ifndef PART1
+# define PART1							1
+#endif
+#ifndef PART2
+# define PART2							1
+#endif
 
-// disable this if your output is totally flooded by errors from <random strings>
-#define RANDOMIZED_TESTS 1
+// disable RANDOMIZED_TESTS if your output is totally flooded by errors containing <random strings>
+#ifndef RANDOMIZED_TESTS
+# define RANDOMIZED_TESTS				1
+#endif
+
+#ifndef FSANITIZE_ADDRESS
+# define FSANITIZE_ADDRESS				0
+#endif
 
 // enable this if you want to be absolutely sure that your functions crash when given NULL on their inputs (or if you
 // are scared of moulinette like me disable this and guard the shit out of your part2 -> do however pay attention that
 // it COULD be that Moulinette will try to write to a NULL you are falsely returning)
-#define PART2_PROTECT_CHECK 0
+#ifndef PART2_PROTECT_CHECK
+# define PART2_PROTECT_CHECK			0
+#endif
 
-#define	MEMSIZE 1000
-#define	ITERATIONS 5000
+// MEMSIZE is the amount of memmory called to life by malloc. pay attention: bigger is not necessarily more rigorous!
+#ifndef MEMSIZE
+# define MEMSIZE						1000
+#endif
+
+// ITERATIONS is the ammount of times our beloved for loops will be called to life; more is theoretically more rigorous
+#ifndef ITERATIONS
+# define ITERATIONS						5000
+#endif
 
 // THINGS TO TAKE NOTE OF:
 // malloc failure is not handled
@@ -48,6 +91,7 @@
 //
 // put.. functions are NOT tested (again, scope)
 
+// i hope this is a proper enough rand init; a custom main throws all kinds of weird errors on my computers 
 ReportHook(PRE_ALL)() {
 	srand(time(NULL));
 }
@@ -60,7 +104,7 @@ char *CRIT_randstring(size_t max_length)
 	{
         for (int i = 0; i < length; i++)
 		{
-            random_string[i] = rand() % 128;
+            random_string[i] = rand() % 256;
 			if (random_string[i] == '\0' && rand() % 2)
 				random_string[i] = 42;
 		}
@@ -79,7 +123,7 @@ char *CRIT_randstring_nullbyte(size_t max_length)
 	{
         for (int i = 0; i < length; i++)
 		{
-            random_string[i] = rand() % 128;
+            random_string[i] = rand() % 256;
 			if (random_string[i] == '\0')
 				random_string[i] = 42;
 		}
@@ -103,10 +147,12 @@ unsigned char *CRIT_randmem(size_t length)
 
 #if PART1
 
+#if !FSANITIZE_ADDRESS
 Test(strings, ft_strlen_segv, .signal = SIGSEGV)
 {
    ft_strlen(NULL);
 }
+#endif
 
 Test(strings, ft_strlen)
 {
@@ -131,6 +177,7 @@ Test(strings, ft_strlen)
 #endif
 }
 
+#if !FSANITIZE_ADDRESS
 Test(strings, ft_strncmp_segv1, .signal = SIGSEGV)
 {
 	ft_strncmp(NULL, "Yallaaaaa", 100);
@@ -140,6 +187,7 @@ Test(strings, ft_strncmp_segv2, .signal = SIGSEGV)
 {
 	ft_strncmp("Yallaaaaa", NULL, 100);
 }
+#endif
 
 Test(strings, ft_strncmp)
 {
@@ -150,138 +198,245 @@ Test(strings, ft_strncmp)
 	str1 = "a";
 	str2 = "b";
 	n = 0;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "a\0";
 	str2 = "b\200";
 	n = 3;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "aa";
 	str2 = "b";
 	n = 2;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
-
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
+	
 	str1 = "a";
 	str2 = "bb";
 	n = 2;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "aYallaaaaa";
 	str2 = "bYallaaaaa";
 	n = 0;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "aYallaaaaa";
 	str2 = "bYallaaaaa";
 	n = 1;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "Yallbaaaa";
 	str2 = "Yallaaaaa";
 	n = 100;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "Yallbaaaa";
 	str2 = "Yallaaaaa";
 	n = 4;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "Yallbaaaa";
 	str2 = "Yallaaaaa";
 	n = 5;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "Yallbaaaa";
 	str2 = "Yallaaaaa";
 	n = 6;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "";
 	str2 = "Yallaaaaa";
 	n = 0;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "";
 	str2 = "Yallaaaaa";
 	n = 1;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "";
 	str2 = "Yallaaaaa";
 	n = 10;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "";
 	str2 = "Yallaaaaa";
 	n = 100;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "Yallaaaaa";
 	str2 = "";
 	n = 0;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "Yallaaaaa";
 	str2 = "";
 	n = 1;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "Yallaaaaa";
 	str2 = "";
 	n = 10;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "Yallaaaaa";
 	str2 = "";
 	n = 100;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "";
 	str2 = "";
 	n = 0;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "";
 	str2 = "";
 	n = 1;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "";
 	str2 = "";
 	n = 100;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "skrr";
 	str2 = "";
 	n = 0;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "skrr";
 	str2 = "";
 	n = 1;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "skrr";
 	str2 = "";
 	n = 100;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "";
 	str2 = "skrr";
 	n = 0;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "";
 	str2 = "skrr";
 	n = 1;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 	str1 = "";
 	str2 = "skrr";
 	n = 100;
-	cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
-
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 
 #if RANDOMIZED_TESTS
 	n = 0;
@@ -290,13 +445,18 @@ Test(strings, ft_strncmp)
 		str1 = CRIT_randstring(ITERATIONS);
 		str2 = CRIT_randstring(ITERATIONS);
 		n++;
-		cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1<RANDOM STRING> s2<RANDOM STRING> n{%lu}", n);
+#if STRNCMP_SIGN
+				cr_expect(((ft_strncmp(str1, str2, n) > 0) && (strncmp(str1, str2, n) > 0)) || ((ft_strncmp(str1, str2, n) < 0) && (strncmp(str1, str2, n) < 0)) || ((ft_strncmp(str1, str2, n) == 0) && (strncmp(str1, str2, n) == 0)) == 1, "Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#else
+				cr_expect_eq(ft_strncmp(str1, str2, n), strncmp(str1, str2, n),"Your ft_strncmp doesnt work for s1{%s} s2{%s} n{%lu}", str1, str2, n);
+#endif
 		free(str1);
 		free(str2);
 	}
 #endif
 }
 
+#if !FSANITIZE_ADDRESS
 Test(strings, ft_strnstr_segv1, .signal = SIGSEGV)
 {
 	ft_strnstr(NULL, "needle", 100);
@@ -306,6 +466,7 @@ Test(strings, ft_strnstr_segv2, .signal = SIGSEGV)
 {
 	ft_strnstr("haystack", NULL, 100);
 }
+#endif
 
 Test(strings,strnstr)
 {
@@ -457,10 +618,12 @@ Test(strings,strnstr)
 #endif
 }
 
+#if !FSANITIZE_ADDRESS
 Test(strings, ft_strchr_segv, .signal = SIGSEGV)
 {
 	ft_strchr(NULL, 100);
 }
+#endif
 
 Test(strings, ft_strchr)
 {
@@ -531,10 +694,12 @@ Test(strings, ft_strchr)
 #endif
 }
 
+#if !FSANITIZE_ADDRESS
 Test(strings, ft_strrchr_segv, .signal = SIGSEGV)
 {
 	ft_strrchr(NULL, 100);
 }
+#endif
 
 Test(strings, ft_strrchr)
 {
@@ -605,6 +770,7 @@ Test(strings, ft_strrchr)
 #endif
 }
 
+#if !FSANITIZE_ADDRESS
 Test(strings, ft_strlcpy_segv1, .signal = SIGSEGV)
 {
 	ft_strlcpy(NULL, malloc(100), 100);
@@ -614,6 +780,7 @@ Test(strings, ft_strlcpy_segv2, .signal = SIGSEGV)
 {
 	ft_strlcpy(malloc(100), NULL, 100);
 }
+#endif
 
 Test(strings, ft_strlcpy)
 {
@@ -778,6 +945,7 @@ Test(strings, ft_strlcpy)
 	free (dst2);
 }
 
+#if !FSANITIZE_ADDRESS
 Test(strings, ft_strlcat_segv1, .signal = SIGSEGV)
 {
 	ft_strlcat(malloc(100), NULL, 100);
@@ -787,6 +955,7 @@ Test(strings, ft_strlcat_segv2, .signal = SIGSEGV)
 {
 	ft_strlcat(NULL, malloc(100), 100);
 }
+#endif
 
 Test(strings, ft_strlcat)
 {
@@ -800,6 +969,14 @@ Test(strings, ft_strlcat)
 	// original doesnt crash with this input!
 	ft_strlcat(NULL, strdup("a"), 0);
 #endif
+
+	// lets see if your cat doesnt run off if we lose the nullbyte (hint: are you using strlen? is it limited by dstsize too?)
+	src = "abc";
+	memset(dst1, 'A', MEMSIZE);
+	memset(dst2, 'A', MEMSIZE);
+	n = 2;
+	cr_expect_eq(ft_strlcat(dst1, src, n), strlcat(dst2, src, n),"Your ft_strlcat doesnt work for dst{%s} src{%s} n{%i}", "AA..AA", src, (int)n);
+	cr_expect(memcmp(dst1, dst2, MEMSIZE) == 0,"Your ft_strlcat doesnt work -> strlcat{%s}, ft_strlcat{%s}", dst1, dst2);
 
 	src = "\200";
 	dst = "\255";
@@ -1144,9 +1321,9 @@ Test(strings, ft_strlcat)
 #if RANDOMIZED_TESTS
 	for (int i = -ITERATIONS; i < ITERATIONS; i++)
 	{
-		src = CRIT_randstring(200);
-		dst = CRIT_randstring(200);
-		n = rand() % 1000;
+		src = CRIT_randstring(MEMSIZE / 2);
+		dst = CRIT_randstring(MEMSIZE / 2);
+		n = rand() % MEMSIZE;
 		memset(dst1, 'A', MEMSIZE);
 		memset(dst2, 'A', MEMSIZE);
 		strcpy(dst1, dst);
@@ -1161,10 +1338,12 @@ Test(strings, ft_strlcat)
 	free (dst2);
 }
 
+#if !FSANITIZE_ADDRESS
 Test(strings, ft_strdup_segv1, .signal = SIGSEGV)
 {
 	ft_strdup(NULL);
 }
+#endif
 
 Test(strings, ft_strdup)
 {
@@ -1288,10 +1467,12 @@ Test(strings, ft_tolower)
 	}
 }
 
+#if !FSANITIZE_ADDRESS
 Test(strings, ft_atoi_segv, .signal = SIGSEGV)
 {
 	ft_atoi(NULL);
 }
+#endif
 
 Test(strings, ft_atoi)
 {
@@ -1383,6 +1564,7 @@ Test(strings, ft_atoi)
 	free (str);
 }
 
+#if !FSANITIZE_ADDRESS
 Test(memory, ft_memset_segv1, .signal = SIGSEGV)
 {
 	ft_memset(NULL, 0, 100);
@@ -1392,6 +1574,7 @@ Test(memory, ft_memset_segv2, .signal = SIGSEGV)
 {
 	ft_memset(malloc(1), 0, -1);
 }
+#endif
 
 Test(memory, ft_memset)
 { 
@@ -1412,21 +1595,24 @@ Test(memory, ft_memset)
 	free(dst2);
 }
 
+#if !FSANITIZE_ADDRESS
 Test(memory, ft_bzero_segv1, .signal = SIGSEGV)
 {
 	ft_bzero(NULL, 1000);
 }
+
 Test(memory, ft_bzero_segv2, .signal = SIGSEGV)
 {
 	ft_bzero(malloc(10), -1);
 }
+#endif
 
 Test(memory, ft_bzero)
 {
 	void	*dst1 = malloc (MEMSIZE);
 	void	*dst2 = malloc (MEMSIZE);
 
-	for (int i = 0; i < ITERATIONS; i++)
+	for (int i = 0; i < MEMSIZE; i++)
 	{
 		memset(dst1, 'A', MEMSIZE);
 		memset(dst2, 'A', MEMSIZE);
@@ -1440,6 +1626,7 @@ Test(memory, ft_bzero)
 	free(dst2);
 }
 
+#if !FSANITIZE_ADDRESS
 Test(memory, ft_memcpy_segv1, .signal = SIGSEGV)
 {
 	ft_memcpy(NULL, strdup("Yallaaa"), 1000);
@@ -1449,6 +1636,7 @@ Test(memory, ft_memcpy_segv2, .signal = SIGSEGV)
 {
 	ft_memcpy(strdup("Yallaaa"), NULL, 1000);
 }
+#endif
 
 Test(memory, ft_memcpy)
 {
@@ -1481,6 +1669,7 @@ Test(memory, ft_memcpy)
 	free (dst2);
 }
 
+#if !FSANITIZE_ADDRESS
 Test(memory, ft_memccpy_segv1, .signal = SIGSEGV)
 {
 	ft_memccpy(NULL, strdup("Yallaaa"), 0, 1000);
@@ -1495,6 +1684,7 @@ Test(memory, ft_memccpy_segv3, .signal = SIGSEGV)
 {
 	ft_memccpy(NULL, NULL, 0, 1000);
 }
+#endif
 
 Test(memory, ft_memccpy)
 {
@@ -1530,6 +1720,7 @@ Test(memory, ft_memccpy)
 	free (dst2);
 }
 
+#if !FSANITIZE_ADDRESS
 Test(memory, ft_memmove_segv1, .signal = SIGSEGV)
 {
 	ft_memmove(NULL, strdup("Yallaaa"), 1000);
@@ -1539,6 +1730,7 @@ Test(memory, ft_memmove_segv2, .signal = SIGSEGV)
 {
 	ft_memmove(strdup("Yallaaa"), NULL, 1000);
 }
+#endif
 
 Test(memory, ft_memmove)
 {
@@ -1584,10 +1776,12 @@ Test(memory, ft_memmove)
 	free (dst2);
 }
 
+#if !FSANITIZE_ADDRESS
 Test(memory, ft_memchr_segv1, .signal = SIGSEGV)
 {
 	ft_memchr(NULL, 0, 1000);
 }
+#endif
 
 Test(memory, ft_memchr)
 {
@@ -1628,6 +1822,7 @@ Test(memory, ft_memchr)
 	free (dst);
 }
 
+#if !FSANITIZE_ADDRESS
 // this could be a false error if you check if "dst == src" and return 0 immediately (which is not part of original
 // functions but otherwise a good idea, no?)
 Test(memory, ft_memcmp_segv1, .signal = SIGSEGV)
@@ -1644,6 +1839,7 @@ Test(memory, ft_memcmp_segv3, .signal = SIGSEGV)
 {
 	ft_memcmp(strdup("abc"), NULL, 1000);
 }
+#endif
 
 Test(memory, ft_memcmp)
 {
@@ -1653,15 +1849,15 @@ Test(memory, ft_memcmp)
 	cr_expect(ft_memcmp(NULL, NULL, 0) == 0, "Your ft_memcmp doesnt work -> ft_memcmp{ s1 : |NULL|, s2 : |NULL|, n : |0|}");
 
 #if RANDOMIZED_TESTS
-	for (size_t i = 0; i < ITERATIONS; i++)
+	for (size_t i = 0; i < MEMSIZE; i++)
 	{
 		memset(dst1, 'A', MEMSIZE);
 		memset(dst2, 'A', MEMSIZE);
 
-		size_t src1_length = rand() % (MEMSIZE / 2);
+		size_t src1_length = rand() % ((MEMSIZE / 2) - 1);
 		unsigned char *src1 = CRIT_randmem(src1_length);
 
-		size_t src2_length = rand() % (MEMSIZE / 2);
+		size_t src2_length = rand() % ((MEMSIZE / 2) - 1);
 		unsigned char *src2 = CRIT_randmem(src2_length);
 
 		memcpy(dst1, src1, src1_length);
@@ -1671,6 +1867,7 @@ Test(memory, ft_memcmp)
 			int orig = memcmp(dst1, dst2, i);
 			int yours = ft_memcmp(dst1, dst2, i);
 			cr_expect(orig == yours, "Your ft_memcmp doesnt work -> ft_memcmp{s1: <RANDOM STRING>, s2: <RANDOM STRING>,  n |%i|}", MEMSIZE);
+
 			free (src1);
 			free (src2);
 		}
@@ -1696,13 +1893,14 @@ Test(memory, ft_calloc)
 
 #if PART2
 
-#if PART2_PROTECT_CHECK == 1
+#if PART2_PROTECT_CHECK
 Test(strings, ft_substr_segv1, .signal = SIGSEGV)
 {
 	ft_substr(NULL, 10, 10);
 }
 #endif
 
+#if !FSANITIZE_ADDRESS
 // your malloc'ing way to much for a string that can only contain 'C'!
 Test(strings, ft_substr_segv2, .signal = SIGSEGV)
 {
@@ -1711,6 +1909,7 @@ Test(strings, ft_substr_segv2, .signal = SIGSEGV)
 	char *str = ft_substr("ABC", 2, 500000000);
 	str[49999000] = 'a';
 }
+#endif
 
 Test(strings, ft_substr)
 {
@@ -1848,7 +2047,7 @@ Test(strings, ft_substr)
 #endif
 }
 
-#if PART2_PROTECT_CHECK
+#if PART2_PROTECT_CHECK && !FSANITIZE_ADDRESS
 Test(strings, ft_strjoin_segv2, .signal = SIGSEGV)
 {
 	ft_strjoin(NULL, "abc");
@@ -1929,7 +2128,7 @@ Test(strings, ft_strjoin)
 #endif
 }
 
-#if PART2_PROTECT_CHECK == 1
+#if PART2_PROTECT_CHECK && !FSANITIZE_ADDRESS
 Test(strings, ft_strtrim_segv1, .signal = SIGSEGV)
 { 
 	ft_strtrim(NULL, NULL);
@@ -2244,7 +2443,7 @@ char CRIT_f3 (unsigned int i, char c)
 	return (0);
 }
 
-#if PART2_PROTECT_CHECK == 1
+#if PART2_PROTECT_CHECK && !FSANITIZE_ADDRESS
 Test(strings, ft_strmapi_segv1, .signal = SIGSEGV)
 { 
 	ft_strmapi(NULL, CRIT_f1);
