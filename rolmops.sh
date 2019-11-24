@@ -95,6 +95,7 @@ _criterion()
 	fi
 }
 
+# LOGIC
 _install()
 {
 	logp info "Starting installation.." && _brew && _criterion && logp info "Finished installation." || logp fatal "Installation failed :("
@@ -286,6 +287,6 @@ EOF"
 logp beginsection
 }
 
-# banners are cool, if you remove the following line the Intergalactic Police will be at your door
+# banners are cool: if you remove the following line the Intergalactic Police will be at your door
 _banner
 _handle_input $@
