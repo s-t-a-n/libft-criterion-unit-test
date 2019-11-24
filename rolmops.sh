@@ -64,7 +64,7 @@ _brew()
 		read yn;
 		if [ "$yn" == 'y' ] || [ "$yn" == 'Y' ]
 		then
-			sh $HOMEBREW_SH && source /Users/$USER/.zshrc || return 1
+			sh $HOMEBREW_SH || return 1
 		else
 			logp info 'OK Bye!'
 			return 1
@@ -87,9 +87,11 @@ _criterion()
 	if [ "$(grep C_INCLUDE_PATH /Users/$USER/.zshrc | grep ".brew/include")" == "" ] || [ "$(grep LIBRARY_PATH /Users/$USER/.zshrc | grep ".brew/lib")" == "" ]
 	then
 		logp info "Adding ZSH environment variables C_INCLUDE_PATH and LIBRARY_PATH to .zshrc"
+		echo "" >> /Users/$USER/.zshrc
 		echo "export C_INCLUDE_PATH=\"/Users/$USER/.brew/include:\$C_INCLUDE_PATH\"" | tee -a /Users/$USER/.zshrc
 		echo "export LIBRARY_PATH=\"/Users/$USER/.brew/lib:\$LIBRARY_PATH\"" | tee -a /Users/$USER/.zshrc
-		source /Users/$USER/.zshrc
+		export C_INCLUDE_PATH="/Users/$USER/.brew/include:\$C_INCLUDE_PATH"
+		export LIBRARY_PATH="/Users/$USER/.brew/lib:\$LIBRARY_PATH"
 	else
 		logp info 'ZSH environment variables C_INCLUDE_PATH and LIBRARY_PATH are already present and set to include .brew libs & includes.'
 	fi

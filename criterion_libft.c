@@ -6,7 +6,7 @@
 /*   By: sverschu </var/mail/sverschu>                +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/11/24 13:21:37 by sverschu      #+#    #+#                 */
-/*   Updated: 2019/11/24 21:15:18 by sverschu      ########   odam.nl         */
+/*   Updated: 2019/11/24 21:27:07 by sverschu      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@
 # define STRLCAT_STRICT_SIMILARITY		0
 #endif
 
-// define STRTRIM_STRICT as 1 to check whether you return the whole string if set does not exist; if you decide this is bullshit, well yeah, you are probably right
+// define STRTRIM_STRICT as 1 to check whether you return the whole string if set points to NULL; if you decide this is bullshit, well yeah, you are probably right
 #ifndef STRTRIM_STRICT
 # define STRTRIM_STRICT					0
 #endif
