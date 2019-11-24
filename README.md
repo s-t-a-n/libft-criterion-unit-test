@@ -1,25 +1,24 @@
 ### Purpose:
-Test your libft with some basic input.
-Beware: This testbattery only check basic input and assumes your parameter input is guarded in the same way the original
-functions (a la Darwin atleast) are. You can ignore _segv notifications if you think this is necessary.
-### Steps:
-1. Run 'criterion_42_install.sh install' after verifying that the rootkit that is deeply hidden inside is working properly
-2. Edit the Makefile and set the LIBFT_FOLDER to where your libft.a resides
-3. Run 'make love'
+Test your libft (2019 curriculum) with both targeted and randomized inputs.
+This unit-test uses the [Criterion](https://criterion.readthedocs.io/en/master/intro.html) C/C++ testing library. 
+The aim of these tests is to find bad behaviours targeted tests (like warmachine) cannot find. A lot comes down to
+compiling your code with [AddressSanitizer](https://clang.llvm.org/docs/AddressSanitizer.html).
+Beware: This testbattery assumes your Part1 parameter input is guarded in the same way the original
+### Installation:
+1. Run './rolmops.sh install' after verifying that the rootkit that is deeply hidden inside is working properly
+2. Edit the configfile 'config' and set the LIBFT_FOLDER to where your libft.a resides
 ### Workings:
-1. 'criterion_42_install install' will install brew and criterion non-destructively
-2. 'make love' will recompile your libft and run the tests
-3. After each error that is displayed by Criterion you will see a line number which corresponds to the line on which the test
-   failed
+1. './rolmops.sh install' will install brew and criterion non-destructively
+2. './rolmops.sh -h' will show you compile- and runtime options
+3. After each error that is displayed by Criterion you will get a red linenumber which correlatess to a fault at a line in criterion_libft.c.
+4. If you receive a dreaded CRASH (segv, abort, or some bad signal) best practice is to add a return() as high up in the function, run again, and move it down until it crashes.
 ### Options
-0. Set the following options in the top of criterion_libft.c (yeah yeah, headers are nice and all)
-1. set 'PART2_PROTECT_CHECK' to 1 in 'criterion_libft.c' if you want to check whether your Part 2(substr, split, etc.) are overprotected. 
-2. set PART1 or PART2 to 1 or 0 depending on whether you want to test it
-3. set STRLCAT_STRICT_SIMILARITY to 1 if you want to check if strlcat behave strictly the same way as the original (probably not that important) 
-3. set ITOA_ATOI_CHECK_ENTIRE_RANGE to 1 if you want to go full OCd on itoa and atoi and check all between INT_MIN and INT_MAX
-4. set RANDOMIZED_TESTS to 0 to disable randomized testing if your console is flooded by it's results
-5. set SPLIT_EXPECT_ARRAY to 0 if you return NULL as the zero'th position in your ft_split when input string only contains delimiters or string doesnt exist
-### TO DO
-1. add ft_put.. functions
-2. add vastly bigger strings to check proper datatype usage
-3. re-read code and add clearly necessary functions
+1. Yo immediately get going start off by changing the config file to point to your libft directory (by default this is ../libft). Then run './rolmops.sh -l 1' for starters.
+2. Eith this unit test you can change memory usage, iteration count of tests, set active parts and some other stuff.
+3. Yhe most relevant options are showed by running './rolmops.sh -h'.
+4. Other options can be found in the top of: criterion_libft.c (yes headers are great, i know).
+### Important
+1. ft_put\* are not checked
+2. Bonus functions are not checked (the lst functions in the 2019 curriculum are not that difficult nor that useful)
+3. Malloc failures and proper frees in case of malloc failures are not handled
+4. Prepare to look at awfully written code. I wrote these 2500 lines of test in order to learn to test properly and to find a segfault that took me three weeks to find which turned out to be one line of code. Prettyness wasn't priority but it grew and grew and now hopefully it will help others in our common cause against Moulinette.
