@@ -6,7 +6,7 @@
 /*   By: sverschu </var/mail/sverschu>                +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/11/24 13:21:37 by sverschu      #+#    #+#                 */
-/*   Updated: 2019/11/24 15:56:47 by sverschu      ########   odam.nl         */
+/*   Updated: 2019/11/24 21:15:18 by sverschu      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,11 @@
 # define STRLCAT_STRICT_SIMILARITY		0
 #endif
 
+// define STRTRIM_STRICT as 1 to check whether you return the whole string if set does not exist; if you decide this is bullshit, well yeah, you are probably right
+#ifndef STRTRIM_STRICT
+# define STRTRIM_STRICT					0
+#endif
+
 // define STRNCMP_SIGN as 1 to do only sign comparison, nut signed number comparison
 #ifndef STRNCMP_SIGN
 # define STRNCMP_SIGN					1
@@ -62,6 +67,8 @@
 # define RANDOMIZED_TESTS				1
 #endif
 
+// set FSANITIZE_ADDRESS to 1 if you are planning on using -fsanitize=address (which you should); it disables segv tests
+// because these will throw false positives
 #ifndef FSANITIZE_ADDRESS
 # define FSANITIZE_ADDRESS				0
 #endif
@@ -2138,6 +2145,7 @@ Test(strings, ft_strtrim)
 	char *set;
 	char *dst;
 
+#if STRTRIM_STRICT
 	src = "abrakadabra";
 	set = NULL;
 	dst = ft_strtrim(src, set);
@@ -2145,6 +2153,7 @@ Test(strings, ft_strtrim)
 	// mutability test
 	dst[0] = 'a';
 	free (dst);
+#endif
 
 	src = "abrakadabra";
 	set = "a";

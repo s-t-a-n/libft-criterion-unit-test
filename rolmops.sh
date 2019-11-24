@@ -161,6 +161,7 @@ Options:
         -s -> for segfault hunting: run code with AddressSanitizer (-fsanitize=address)
                open your libft Makefile add -fsanitize=address to your compile flags
                like this: CC_FLAGS = -Werror -Wextra -Wall -fsanitize=address
+        -r -> use randomized tests [1/0]
               -------------------------------------------------------------------------------
 Run commands:
         compile     / c	 -> compile your libft and compile tests with your libft.a
@@ -175,7 +176,6 @@ Examples:
                                       			for 10000 iterations,
                                        			with fsanitize=address flag,
                                        			and will only check part 1
-
 EOF
 
 	exit 1
