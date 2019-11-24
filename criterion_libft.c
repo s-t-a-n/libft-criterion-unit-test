@@ -6,7 +6,7 @@
 /*   By: sverschu </var/mail/sverschu>                +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/11/24 13:21:37 by sverschu      #+#    #+#                 */
-/*   Updated: 2019/11/24 14:50:04 by sverschu      ########   odam.nl         */
+/*   Updated: 2019/11/24 15:56:47 by sverschu      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,15 +83,7 @@
 # define ITERATIONS						5000
 #endif
 
-// THINGS TO TAKE NOTE OF:
-// malloc failure is not handled
-//
-// lst functions as found in the 2019 curriculum are not tested, that is beyond the scope of these tests; besides the
-// list functions are not that terribly useful
-//
-// put.. functions are NOT tested (again, scope)
-
-// i hope this is a proper enough rand init; a custom main throws all kinds of weird errors on my computers 
+// i hope this is a proper enough rand init; a custom main throws all kinds of weird errors on my computer
 ReportHook(PRE_ALL)() {
 	srand(time(NULL));
 }

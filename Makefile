@@ -6,14 +6,9 @@
 #    By: sverschu </var/mail/sverschu>                +#+                      #
 #                                                    +#+                       #
 #    Created: 2019/10/30 16:10:10 by sverschu      #+#    #+#                  #
-#    Updated: 2019/11/23 23:45:45 by sverschu      ########   odam.nl          #
+#    Updated: 2019/11/24 16:00:30 by sverschu      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
-
-# ONLY CHANGE IF THE GODS HAVE DECIDED TO USE PROPER FOLDERS
-LIBFT_INC = $(LIBFT_FOLDER)
-
-NAME = run-test
 
 # C sourcefiles
 SRC = criterion_libft.c $(LIBFT_FOLDER)/libft.a
@@ -29,7 +24,7 @@ $(NAME): $(SRC)
 	@$(CC) $(CC_FLAGS) $(EXT_FLAGS) -I$(LIBFT_INC) $(SRC) -o $(NAME)
 
 clean:
-	@$(RM) $(OBJ) $(BONUS_OBJ)
+	@$(RM) $(OBJ)
 
 fclean: clean
 	@$(RM) $(NAME)

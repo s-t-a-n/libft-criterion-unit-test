@@ -3,8 +3,12 @@
 # change this to your libft folder
 export LIBFT_FOLDER=../libft
 
+# ONLY CHANGE IF THE GODS HAVE DECIDED TO USE PROPER FOLDERS
+export LIBFT_INC=$LIBFT_FOLDER
+
 # amount of times smokebreak will try to fuck with your code before giving up
 export SMOKEBREAK_MAX=250
 
 # DEBUG INTERNALS
-export EXEC=./run-test
+export NAME=run-test
+export EXEC=./$NAME
