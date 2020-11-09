@@ -1,3 +1,4 @@
+![alt text](https://github.com/s-t-a-n/libft-criterion-unit-test/blob/master/.banner.png?raw=true)
 ### Purpose:
 Test your libft (2019 curriculum) with both targeted and randomized inputs.
 This unit-test uses the [Criterion](https://criterion.readthedocs.io/en/master/intro.html) C/C++ testing library. 
@@ -5,8 +6,9 @@ The aim of these tests is to find bad behaviours targeted tests (like warmachine
 compiling your code with [AddressSanitizer](https://clang.llvm.org/docs/AddressSanitizer.html).
 Beware: This testbattery assumes your Part1 parameter input is guarded in the same way as the original functions.
 ### Installation:
-1. Run './rolmops.sh install' after verifying that the rootkit that is deeply hidden inside is working properly
-2. Edit the configfile 'config' and set the LIBFT_FOLDER to where your libft.a resides
+1. Git clone this repo to one folder below your 'libft' folder (or change the config file to reflect a different repository).
+2. Run './rolmops.sh install' after verifying that the rootkit that is deeply hidden inside is working properly
+3. Edit the configfile 'config' and set the LIBFT_FOLDER to where your libft.a resides
 ### Workings:
 1. './rolmops.sh install' will install brew and criterion non-destructively
 2. './rolmops.sh -h' will show you compile- and runtime options
