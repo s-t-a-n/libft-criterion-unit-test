@@ -14,6 +14,7 @@
 # ONLY EDIT THINGS IN ./config OR THE GODS WILL BE DISPLEASED
 source ./config
 
+callee=$0
 banner=false
 
 # TRAP
@@ -119,7 +120,7 @@ _compile()
 	fi
 
 	export EXT_FLAGS="${EXT_FLAGS}"
-	make -C $LIBFT_FOLDER re && make re
+	make re
 	result=$?
 
 	if [ $result -gt 0 ] && [ "$(echo $EXT_FLAGS | grep sanitize)" != "" ]
@@ -154,7 +155,7 @@ _smokebreak()
 
 _usage()
 {
-	logp info "Usage: $0"
+	logp info "Usage:"
 cat<<EOF
 Options:
         -m -> size used in call to malloc [0..MAX] -> default : 1000
@@ -178,13 +179,12 @@ Run commands:
                              behaviour with randomized tests
               -------------------------------------------------------------------------------
 Examples:
-        $0	install -> will install brew and criterion non-destructively
-        $0	-m 2000 -i 10000 -s -p 1 ->	will run with 2000 as malloc size,
+        $callee	install -> will install brew and criterion non-destructively
+        $callee	-m 2000 -i 10000 -s -p 1 ->	will run with 2000 as malloc size,
                                       			for 10000 iterations,
                                        			with fsanitize=address flag,
                                        			and will only check part 1
 EOF
-
 	exit 1
 }
 
@@ -195,11 +195,11 @@ _handle_input()
 	# read run options
 	for ARG in $@
 	do
-		if [ "${ARG}" == "install" ]; then ACTION="install"; break; fi
-		if [ "${ARG}" == "compile" ] || [ "${ARG}" == "c" ]; then ACTION="compile"; break; fi
-		if [ "${ARG}" == "run" ] || [ "${ARG}" == "r" ]; then ACTION="run"; fi
-		if [ "${ARG}" == "compile-run" ] || [ "${ARG}" == "cr" ]; then ACTION="compile-run"; fi
-		if [ "${ARG}" == "smokebreak" ] || [ "${ARG}" == "s" ]; then ACTION="smokebreak"; fi
+		if [ "${ARG}" = "install" ]; then ACTION="install"; break; fi
+		if [ "${ARG}" = "compile" ] || [ "${ARG}" = "c" ]; then ACTION="compile"; break; fi
+		if [ "${ARG}" = "run" ] || [ "${ARG}" = "r" ]; then ACTION="run"; fi
+		if [ "${ARG}" = "compile-run" ] || [ "${ARG}" = "cr" ]; then ACTION="compile-run"; fi
+		if [ "${ARG}" = "smokebreak" ] || [ "${ARG}" = "s" ]; then ACTION="smokebreak"; fi
 	done
 
 	# read options which detail an amount
@@ -305,7 +305,7 @@ EOF"
 logp beginsection
 }
 
-_env
+#_env
 # banners are cool: if you remove the following line the Intergalactic Police will be at your door
 _banner
 _handle_input $@
