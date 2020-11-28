@@ -217,16 +217,16 @@ _handle_input()
 					EXT_FLAGS="$EXT_FLAGS -D ITERATIONS=${OPTARG}"
 					;;
 				p)
-					((${OPTARG} = 1)) && EXT_FLAGS="$EXT_FLAGS -D PART1=1 -D PART2=0"
-					((${OPTARG} = 2)) && EXT_FLAGS="$EXT_FLAGS -D PART1=0 -D PART2=1"
-					((${OPTARG} = 12)) && EXT_FLAGS="$EXT_FLAGS -D PART1=1 -D PART2=1"
-					((${OPTARG} = 1)) || ((${OPTARG} = 2)) || ((${OPTARG} = 12)) || _usage
+					((${OPTARG} == 1)) && EXT_FLAGS="$EXT_FLAGS -D PART1=1 -D PART2=0"
+					((${OPTARG} == 2)) && EXT_FLAGS="$EXT_FLAGS -D PART1=0 -D PART2=1"
+					((${OPTARG} == 12)) && EXT_FLAGS="$EXT_FLAGS -D PART1=1 -D PART2=1"
+					((${OPTARG} == 1)) || ((${OPTARG} -eq 2)) || ((${OPTARG} -eq 12)) || _usage
 					;;
 				l)
-					((${OPTARG} = 1)) && EXT_FLAGS="-D RANDOMIZED_TESTS=0 -D MEMSIZE=200 -D ITERATIONS=100"
-					((${OPTARG} = 2)) && EXT_FLAGS="-D MEMSIZE=500 -D ITERATIONS=1000 -D RANDOMIZED_TESTS=1"
-					((${OPTARG} = 3)) && EXT_FLAGS="-D STRLCAT_STRICT_SIMILARITY=1 -D MEMSIZE=5000 -D ITERATIONS=10000 -D RANDOMIZED_TESTS=1"
-					((${OPTARG} = 1)) || ((${OPTARG} = 2)) || ((${OPTARG} = 3)) || _usage
+					((${OPTARG} == 1)) && EXT_FLAGS="-D RANDOMIZED_TESTS=0 -D MEMSIZE=200 -D ITERATIONS=100"
+					((${OPTARG} == 2)) && EXT_FLAGS="-D MEMSIZE=500 -D ITERATIONS=1000 -D RANDOMIZED_TESTS=1"
+					((${OPTARG} == 3)) && EXT_FLAGS="-D STRLCAT_STRICT_SIMILARITY=1 -D MEMSIZE=5000 -D ITERATIONS=10000 -D RANDOMIZED_TESTS=1"
+					((${OPTARG} == 1)) || ((${OPTARG} == 2)) || ((${OPTARG} == 3)) || _usage
 
 					# run tests immediately
 					_compile
@@ -237,9 +237,9 @@ _handle_input()
 					logp warning "--- Don't forget to ADD -fsanitize=address to your flags (like -Wall -Werror -Wextra) in your libft makefile before compiling!"
 					;;
 				r)
-					((${OPTARG} = 0)) && EXT_FLAGS="$EXT_FLAGS -D RANDOMIZED_TESTS=0"
-					((${OPTARG} = 1)) && EXT_FLAGS="$EXT_FLAGS -D RANDOMIZED_TESTS=1"
-					((${OPTARG} = 0)) || ((${OPTARG} = 1)) || _usage
+					((${OPTARG} == 0)) && EXT_FLAGS="$EXT_FLAGS -D RANDOMIZED_TESTS=0"
+					((${OPTARG} == 1)) && EXT_FLAGS="$EXT_FLAGS -D RANDOMIZED_TESTS=1"
+					((${OPTARG} == 0)) || ((${OPTARG} == 1)) || _usage
 
 					;;
 				*)
